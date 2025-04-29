@@ -1,37 +1,58 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-// import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-// import { auth, googleProvider } from "../firebase.config";
+import React, { useState } from "react";
+import { AuthContext } from "../providers/AuthProvider";
+import { useContext } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Login() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const location = useLocation();
+  // console.log(location);
+  const { signInUser, loginWithGoogle, setFirebaseUser, loading } =
+    useContext(AuthContext);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
-    try {
-      await signInWithEmailAndPassword(auth, form.email, form.password);
-      navigate("/");
-    } catch (err) {
-      setError("Invalid email or password.");
-    }
+  const friendlyErrors = {
+    "auth/invalid-credential": "Invalid-Credential.",
   };
 
-  const handleGoogleLogin = async () => {
-    setError("");
-    try {
-      await signInWithPopup(auth, googleProvider);
-      navigate("/");
-    } catch (err) {
-      setError("Google login failed.");
-    }
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    // Destructure formData values
+    const { email, password } = form;
+
+    // Calling sign in function here
+    //console.log("Signing in with", email, password);
+    signInUser(email, password)
+      .then((result) => {
+        const user = result.user;
+        setFirebaseUser(user);
+        navigate(location?.state ? location.state : "/");
+      })
+      .catch((err) => {
+        setError({
+          ...error,
+          login: friendlyErrors[err.code] || "Login failed.",
+        });
+      });
+
+    // clear fields after sign in
+    e.target.reset();
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#2A2438]">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#222831] flex items-center justify-center px-4">
@@ -68,7 +89,10 @@ export default function Login() {
 
           {error && <p className="text-red-400 text-sm text-center">{error}</p>}
 
-          <button type="submit" className="btn w-full bg-[#FD7014] text-white border-none hover:bg-[#e76100]">
+          <button
+            type="submit"
+            className="btn w-full bg-[#FD7014] text-white border-none hover:bg-[#e76100]"
+          >
             Login
           </button>
 
@@ -76,7 +100,7 @@ export default function Login() {
 
           <button
             type="button"
-            onClick={handleGoogleLogin}
+            onClick={loginWithGoogle}
             className="btn w-full bg-white text-black hover:bg-gray-100"
           >
             Continue with Google
