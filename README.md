@@ -1,11 +1,22 @@
-Frontend:
+# Car Rental Platform – Setup Instructions
+
+This repository contains the frontend and backend setup for the Car Rental System.
+
+---
+
+## 🚀 Frontend Setup
+
+### 1. Create Vite React App
+```bash
 npm create vite@latest projectName -- --template react
 npm install tailwindcss@latest @tailwindcss/vite@latest daisyui@latest
 npm install react-router-dom localforage match-sorter sort-by
 npm install firebase
-
-Backend:
+```
+## 🚀 Backend Setup
+```bash
 npm init -y
 npm i express cors mongodb dotenv
 npm install -g nodemon
 nodemon index.js
+```
