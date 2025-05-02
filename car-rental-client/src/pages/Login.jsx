@@ -36,10 +36,7 @@ export default function Login() {
         navigate(location?.state ? location.state : "/");
       })
       .catch((err) => {
-        setError({
-          ...error,
-          login: friendlyErrors[err.code] || "Login failed.",
-        });
+        setError(friendlyErrors[err.code] || "Login failed.");
       });
 
     // clear fields after sign in
