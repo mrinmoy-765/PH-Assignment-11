@@ -3,7 +3,7 @@ import banner from "../assets/banner.png";
 
 const Banner = () => {
   return (
-    <div className="relative w-full h-[80vh] overflow-hidden">
+    <div className="relative w-full md:h-[80vh]  h-[60vh] overflow-hidden">
       <img src={banner} alt="Banner" className="w-full h-full object-cover" />
 
       {/* Text & Button Container */}
@@ -14,7 +14,7 @@ const Banner = () => {
         </h1>
 
         {/* Subheading Badge */}
-        <div className="mb-4 mt-44">
+        <div className="mb-4 md:mt-44 mt-64">
           <div className="px-4 py-2 text-sm sm:text-base text-white font-light bg-transparent border border-red-600 hover:bg-red-600 rounded-lg transition duration-300">
             Your Next Car Awaits You
           </div>

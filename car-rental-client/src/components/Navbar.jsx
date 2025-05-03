@@ -29,9 +29,9 @@ export default function Navbar() {
         {/* Logo and Site Name */}
         <Link
           to="/"
-          className="flex items-center gap-2 text-2xl font-bold text-[#FD7014]"
+          className="flex items-center gap-2 text-2xl font-bold text-red-600"
         >
-          <FaCarSide className="text-[#FD7014]" size={28} />
+          <FaCarSide className="text-red-600" size={28} />
           <span>XoRide</span>
         </Link>
 
