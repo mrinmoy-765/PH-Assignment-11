@@ -106,6 +106,19 @@ async function run() {
       }
     });
 
+    //delete car
+    app.delete("/cars/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await carCollection.deleteOne(query);
+        res.json(result); // Ensure you're returning JSON
+      } catch (err) {
+        console.error("Delete error:", err);
+        res.status(500).json({ message: "Server error", error: err.message });
+      }
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(

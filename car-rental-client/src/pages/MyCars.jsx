@@ -3,12 +3,11 @@ import { AuthContext } from "../providers/AuthProvider";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Swal from "sweetalert2";
 import { FaTrash, FaEdit } from "react-icons/fa";
-import { toast, ToastContainer } from "react-toastify"; // ✅ Ensure toast is imported
+import { toast, ToastContainer } from "react-toastify";
 
 const MyCars = () => {
   const { userCar, loading } = useContext(AuthContext);
   const [cars, setCars] = useState([]);
-  const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [selectedCar, setSelectedCar] = useState(null);
 
   useEffect(() => {
@@ -17,13 +16,39 @@ const MyCars = () => {
     }
   }, [userCar]);
 
-  const handleDelete = (id) => {
-    Swal.fire("Delete action coming soon!", "", "info");
+  const handleDelete = (carId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`http://localhost:5000/cars/${carId}`, {
+          method: "DELETE",
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.deletedCount > 0) {
+              Swal.fire(
+                "Deleted!",
+                "Your car has been removed successfully.",
+                "success"
+              );
+
+              setCars(cars.filter((car) => car._id !== carId));
+            }
+          });
+      }
+    });
   };
 
   const handleEditClick = (car) => {
     setSelectedCar(car);
-    document.getElementById("edit_modal").showModal(); // ✅ Open modal
+    document.getElementById("edit_modal").showModal();
   };
 
   const handleUpdateCar = async (e) => {
