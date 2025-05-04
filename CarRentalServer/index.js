@@ -27,12 +27,51 @@ async function run() {
     await client.connect();
 
     const userCollection = client.db("CarRental").collection("Users");
+    const carCollection = client.db("CarRental").collection("carCollection");
 
     //create User
     app.post("/users", async (req, res) => {
       const newUser = req.body;
       // console.log(newUser);
       const result = await userCollection.insertOne(newUser);
+      res.send(result);
+    });
+
+    //get user by email retrived from firebase
+    app.get("/users", async (req, res) => {
+      try {
+        const email = req.query.email;
+        if (!email)
+          return res.status(400).send({ message: "Email is required" });
+
+        const user = await userCollection.findOne({ email }); // ✅ correct variable
+
+        if (!user) return res.status(404).send({ message: "User not found" });
+
+        res.send(user);
+      } catch (error) {
+        console.error("Error in /users route:", error);
+        res.status(500).send({ message: "Internal Server Error" });
+      }
+    });
+
+    //add cars
+    app.post("/addCar", async (req, res) => {
+      const newCar = req.body;
+      // console.log(newCar);
+      const result = await carCollection.insertOne(newCar);
+      res.send(result);
+    });
+
+    //get logged in users all cars
+    app.get("/carsByEmail", async (req, res) => {
+      const email = req.query.email;
+      if (!email) {
+        return res.status(400).send({ error: "Email is required" });
+      }
+
+      const query = { email: email };
+      const result = await carCollection.find(query).toArray();
       res.send(result);
     });
 

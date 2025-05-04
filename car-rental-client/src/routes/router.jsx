@@ -4,6 +4,8 @@ import Login from "../pages/Login";
 import MainLayout from "../layouts/MainLayout";
 import Home from "../pages/Home";
 import NotFound from "../components/notFound";
+import AddCar from "../pages/AddCar";
+import MyCars from "../pages/MyCars";
 
 const router = createBrowserRouter([
   {
@@ -13,6 +15,14 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Home></Home>,
+      },
+      {
+        path: "/addCar",
+        element: <AddCar></AddCar>,
+      },
+      {
+        path: "/my-cars",
+        element: <MyCars></MyCars>,
       },
     ],
   },

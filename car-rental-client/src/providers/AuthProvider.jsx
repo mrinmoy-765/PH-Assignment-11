@@ -17,9 +17,10 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
 const AuthProvider = ({ children }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [firebaseUser, setFirebaseUser] = useState(null);
-  // const [mongoUser, setMongoUser] = useState(null);
+  const [mongoUser, setMongoUser] = useState(null);
+  const [userCar, setUserCar] = useState(null);
 
   const createUser = (email, password) => {
     setLoading(true);
@@ -31,7 +32,7 @@ const AuthProvider = ({ children }) => {
   const signInUser = (email, password) => {
     setLoading(true);
     return signInWithEmailAndPassword(auth, email, password).finally(() => {
-      setLoading(false);
+      setLoading(false); // Keep for action feedback
     });
   };
 
@@ -66,37 +67,68 @@ const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setFirebaseUser(user);
-      //fetch user details from mongoDB
-      // if (user?.email) {
-      //   fetch(`http://localhost:5000/users?email=${user.email}`)
-      //     .then((res) => res.json())
-      //     .then((data) => {
-      //       setMongoUser(data);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setFirebaseUser(currentUser);
+      console.log("Auth state changed, user:", currentUser?.email); // Debug log
 
-      //     })
-      //     .catch((err) => {
-      //       console.error("MongoDB user fetch error:", err);
-      //       setLoading(false);
-      //     });
-      // } else {
-      //   //setMongoUser(null);
-      //   setLoading(false);
-      // }
+      if (currentUser?.email) {
+        // ✅ STEP 2: Set loading true when starting data fetch for a logged-in user
+        setLoading(true);
+        fetch(`http://localhost:5000/users?email=${currentUser.email}`)
+          .then((res) => {
+            if (!res.ok) throw new Error(`User fetch failed: ${res.status}`);
+            return res.json();
+          })
+          .then((userData) => {
+            setMongoUser(userData);
+            // Chain the next fetch
+            return fetch(
+              `http://localhost:5000/carsByEmail?email=${currentUser.email}`
+            );
+          })
+          .then((res) => {
+            if (!res.ok) throw new Error(`Car fetch failed: ${res.status}`);
+            return res.json();
+          })
+          .then((carData) => {
+            console.log("Fetched car data:", carData); // Debug log
+            setUserCar(carData);
+            // ✅ STEP 3: Set loading false AFTER all data is fetched successfully
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.error("Data fetch error:", err);
+            setMongoUser(null); // Reset data on error
+            setUserCar(null);
+            // ✅ STEP 4: Set loading false even if there's an error
+            setLoading(false);
+          });
+      } else {
+        // No user is logged in or user logged out
+        console.log("No user logged in or logged out."); // Debug log
+        setMongoUser(null);
+        setUserCar(null);
+        // ✅ STEP 5: Set loading false because the auth check is complete (no user)
+        setLoading(false);
+      }
     });
 
-    return () => unsubscribe();
-  }, []);
+    // Cleanup function
+    return () => {
+      console.log("Unsubscribing from auth state changes."); // Debug log
+      unsubscribe();
+    };
+  }, []); // Empty dependency array is correct here
 
   const authValue = {
     firebaseUser,
     setFirebaseUser,
-    // mongoUser,
+    mongoUser,
     createUser,
     signInUser,
     loginWithGoogle,
     logOut,
+    userCar,
     loading,
   };
   return (

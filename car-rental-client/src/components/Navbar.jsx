@@ -3,9 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../providers/AuthProvider";
 import { FaCarSide, FaBars, FaTimes } from "react-icons/fa";
 import Swal from "sweetalert2";
+import LoadingSpinner from "./LoadingSpinner";
 
 export default function Navbar() {
-  const { firebaseUser, mongoUser, logOut } = useContext(AuthContext);
+  const { firebaseUser, mongoUser, logOut, loading } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -22,6 +23,14 @@ export default function Navbar() {
 
   const navLinkClass =
     "block py-2 px-2 hover:text-[#FD7014]  transition duration-300";
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#2A2438]">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <header className="bg-[#393E46] text-[#EEEEEE] shadow-md">
@@ -62,7 +71,7 @@ export default function Navbar() {
             </Link>
           ) : (
             <>
-              <Link to="/add-car" className={navLinkClass}>
+              <Link to="/addCar" className={navLinkClass}>
                 Add Car
               </Link>
               <Link to="/my-cars" className={navLinkClass}>
