@@ -75,6 +75,37 @@ async function run() {
       res.send(result);
     });
 
+    // Update car info
+    app.put("/cars/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedCar = req.body;
+
+      console.log("Updating Car with filter:", filter);
+      console.log("New data:", updatedCar);
+
+      const updateDoc = {
+        $set: {
+          model: updatedCar.model,
+          price: updatedCar.price,
+          availability: updatedCar.availability,
+          registration: updatedCar.registration,
+          features: updatedCar.features,
+          description: updatedCar.description,
+          imageUrl: updatedCar.imageUrl,
+          location: updatedCar.location,
+        },
+      };
+
+      try {
+        const result = await carCollection.updateOne(filter, updateDoc);
+        res.send(result);
+      } catch (error) {
+        console.error("Error updating car:", error);
+        res.status(500).send({ error: "Failed to update car" });
+      }
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(

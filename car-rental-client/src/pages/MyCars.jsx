@@ -3,10 +3,13 @@ import { AuthContext } from "../providers/AuthProvider";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Swal from "sweetalert2";
 import { FaTrash, FaEdit } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify"; // ✅ Ensure toast is imported
 
 const MyCars = () => {
   const { userCar, loading } = useContext(AuthContext);
   const [cars, setCars] = useState([]);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [selectedCar, setSelectedCar] = useState(null);
 
   useEffect(() => {
     if (userCar) {
@@ -18,11 +21,45 @@ const MyCars = () => {
     Swal.fire("Delete action coming soon!", "", "info");
   };
 
-  const handleUpdate = (id) => {
-    Swal.fire("Not implemented", "Update form coming soon!", "info");
+  const handleEditClick = (car) => {
+    setSelectedCar(car);
+    document.getElementById("edit_modal").showModal(); // ✅ Open modal
   };
 
-  // ✅ Show loader while context is loading
+  const handleUpdateCar = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`http://localhost:5000/cars/${selectedCar._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(selectedCar),
+      });
+
+      const data = await res.json();
+
+      if (data.modifiedCount > 0) {
+        toast.success("Car updated successfully!");
+        // Optimistically update local state
+        setCars((prev) =>
+          prev.map((car) => (car._id === selectedCar._id ? selectedCar : car))
+        );
+        document.getElementById("edit_modal").close(); // ✅ Close modal
+      } else {
+        toast.warn("No changes were made.");
+      }
+    } catch (err) {
+      toast.error("Update failed.");
+      console.error(err);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedCar({ ...selectedCar, [name]: value });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#2A2438]">
@@ -31,7 +68,6 @@ const MyCars = () => {
     );
   }
 
-  // ✅ Once loading is done, if no cars
   if (!cars || cars.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -87,14 +123,14 @@ const MyCars = () => {
                 </td>
                 <td className="p-2 flex justify-center gap-2">
                   <button
-                    onClick={() => handleUpdate(car._id)}
-                    className="text-blue-600 hover:text-blue-800"
+                    onClick={() => handleEditClick(car)}
+                    className="text-blue-600 hover:text-blue-800 text-xl mt-5"
                   >
                     <FaEdit />
                   </button>
                   <button
                     onClick={() => handleDelete(car._id)}
-                    className="text-red-600 hover:text-red-800"
+                    className="text-red-600 hover:text-red-800 text-xl mt-5"
                   >
                     <FaTrash />
                   </button>
@@ -104,6 +140,153 @@ const MyCars = () => {
           </tbody>
         </table>
       </div>
+
+      <dialog id="edit_modal" className="modal">
+        <div className="modal-box max-w-5xl">
+          {" "}
+          {/* Optional: Wider modal for better spacing */}
+          <form method="dialog">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
+          </form>
+          <h3 className="font-bold text-lg mb-4">
+            Edit Car - {selectedCar?.model}
+          </h3>
+          {/* Image */}
+          <div className="flex justify-center mb-4">
+            <img
+              src={selectedCar?.imageUrl}
+              alt={selectedCar?.model}
+              className="w-48 h-32 object-cover rounded shadow"
+            />
+          </div>
+          {selectedCar ? (
+            <>
+              <form
+                onSubmit={handleUpdateCar}
+                className="grid grid-cols-1 md:grid-cols-2 gap-4"
+              >
+                {/* Model */}
+                <div>
+                  <p className="font-semibold mb-1">Model</p>
+                  <input
+                    type="text"
+                    name="model"
+                    value={selectedCar.model}
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full"
+                    placeholder="Model"
+                  />
+                </div>
+
+                {/* Price */}
+                <div>
+                  <p className="font-semibold mb-1">Price (Daily)</p>
+                  <input
+                    type="number"
+                    name="price"
+                    value={selectedCar.price}
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full"
+                    placeholder="Price"
+                  />
+                </div>
+
+                {/* Availability */}
+                <div>
+                  <p className="font-semibold mb-1">Availability</p>
+                  <select
+                    name="availability"
+                    value={selectedCar.availability}
+                    onChange={handleInputChange}
+                    className="select select-bordered w-full"
+                  >
+                    <option value="Available">Available</option>
+                    <option value="Unavailable">Unavailable</option>
+                  </select>
+                </div>
+
+                {/* Registration */}
+                <div>
+                  <p className="font-semibold mb-1">Registration Number</p>
+                  <input
+                    name="registration"
+                    type="text"
+                    value={selectedCar.registration}
+                    required
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+
+                {/* Features */}
+                <div>
+                  <p className="font-semibold mb-1">Features</p>
+                  <input
+                    name="features"
+                    type="text"
+                    value={selectedCar.features}
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+
+                {/* Location */}
+                <div>
+                  <p className="font-semibold mb-1">Location</p>
+                  <input
+                    name="location"
+                    value={selectedCar.location}
+                    required
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+
+                {/* Image URL */}
+                <div className="md:col-span-2">
+                  <p className="font-semibold mb-1">Image URL</p>
+                  <input
+                    name="imageUrl"
+                    value={selectedCar.imageUrl}
+                    required
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+
+                {/* Description */}
+                <div className="md:col-span-2">
+                  <p className="font-semibold mb-1">Description</p>
+                  <textarea
+                    name="description"
+                    value={selectedCar.description}
+                    required
+                    onChange={handleInputChange}
+                    className="textarea textarea-bordered w-full"
+                  />
+                </div>
+
+                {/* Submit Button */}
+                <div className="md:col-span-2">
+                  <button type="submit" className="btn btn-primary w-full">
+                    Update
+                  </button>
+                </div>
+              </form>
+            </>
+          ) : (
+            <div className="text-center py-10">Loading Car Details...</div>
+          )}
+        </div>
+      </dialog>
+      <ToastContainer
+        position="top-right"
+        autoClose={500000}
+        hideProgressBar
+        pauseOnHover
+      />
     </div>
   );
 };
