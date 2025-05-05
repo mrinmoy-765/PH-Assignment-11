@@ -61,7 +61,7 @@ export default function Navbar() {
           <Link to="/" className={navLinkClass}>
             Home
           </Link>
-          <Link to="/cars" className={navLinkClass}>
+          <Link to="/available-cars" className={navLinkClass}>
             Available Cars
           </Link>
 

@@ -6,6 +6,7 @@ import Home from "../pages/Home";
 import NotFound from "../components/notFound";
 import AddCar from "../pages/AddCar";
 import MyCars from "../pages/MyCars";
+import AvailableCars from "../pages/AvailableCars";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
       {
         path: "/my-cars",
         element: <MyCars></MyCars>,
+      },
+      {
+        path:"/available-cars",
+        element:<AvailableCars></AvailableCars>,
       },
     ],
   },

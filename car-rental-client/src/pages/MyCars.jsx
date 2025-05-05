@@ -115,6 +115,7 @@ const MyCars = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <p className="text-xl text-gray-600">No cars added yet.</p>
+        <Link to="/addCar">Add a Car</Link>
       </div>
     );
   }

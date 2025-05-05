@@ -119,6 +119,18 @@ async function run() {
       }
     });
 
+    // GET available cars
+    app.get("/cars/available", async (req, res) => {
+      try {
+        const cars = await carCollection.find({ availability: 'Available' }); 
+        res.json(cars);
+      } catch (err) {
+        console.error('Error fetching available cars:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    });
+    
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(

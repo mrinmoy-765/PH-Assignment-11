@@ -91,7 +91,7 @@ const AuthProvider = ({ children }) => {
             return res.json();
           })
           .then((carData) => {
-            console.log("Fetched car data:", carData); // Debug log
+           // console.log("Fetched car data:", carData); // Debug log
             setUserCar(carData);
             // ✅ STEP 3: Set loading false AFTER all data is fetched successfully
             setLoading(false);
