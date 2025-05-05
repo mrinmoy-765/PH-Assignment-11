@@ -9,12 +9,30 @@ const MyCars = () => {
   const { userCar, loading } = useContext(AuthContext);
   const [cars, setCars] = useState([]);
   const [selectedCar, setSelectedCar] = useState(null);
+  const [sortOption, setSortOption] = useState("");
 
   useEffect(() => {
     if (userCar) {
       setCars(userCar);
     }
   }, [userCar]);
+
+  useEffect(() => {
+    if (!userCar) return;
+
+    let sortedCars = [...userCar];
+    if (sortOption === "price-low") {
+      sortedCars.sort((a, b) => a.price - b.price);
+    } else if (sortOption === "price-high") {
+      sortedCars.sort((a, b) => b.price - a.price);
+    } else if (sortOption === "date-newest") {
+      sortedCars.sort((a, b) => new Date(b.date) - new Date(a.date));
+    } else if (sortOption === "date-oldest") {
+      sortedCars.sort((a, b) => new Date(a.date) - new Date(b.date));
+    }
+
+    setCars(sortedCars);
+  }, [sortOption, userCar]);
 
   const handleDelete = (carId) => {
     Swal.fire({
@@ -106,6 +124,19 @@ const MyCars = () => {
       <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
         My Cars
       </h2>
+      <div className="flex justify-end mb-4">
+        <select
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
+          className="select select-bordered w-full max-w-xs"
+        >
+          <option value="">Sort By</option>
+          <option value="date-newest">Date Added (Newest)</option>
+          <option value="date-oldest">Date Added (Oldest)</option>
+          <option value="price-low">Price (Lowest)</option>
+          <option value="price-high">Price (Highest)</option>
+        </select>
+      </div>
       <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
         <table className="table">
           <thead className="bg-gray-100 text-gray-700 text-sm uppercase">
