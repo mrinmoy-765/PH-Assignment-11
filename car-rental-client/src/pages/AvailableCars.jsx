@@ -9,21 +9,26 @@ const AvailableCars = () => {
   const [error, setError] = useState(null); // Optional error state
 
   useEffect(() => {
-    const fetchAvailableCars = async () => {
+    const fetchCars = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/cars/available');
-        setCars(response.data);
-        setLoading(false);
+        const res = await fetch("http://localhost:5000/cars/available");
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setCars(data);
+        } else {
+          throw new Error("Unexpected response format");
+        }
       } catch (err) {
-        console.error('Error fetching cars:', err);
-        setError('Failed to load cars');
+        console.error(err);
+        setError("Failed to load cars");
+      } finally {
         setLoading(false);
       }
     };
-
-    fetchAvailableCars();
+  
+    fetchCars();
   }, []);
-
+  
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#2A2438]">
@@ -35,6 +40,11 @@ const AvailableCars = () => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mx-4 my-8">
+      {cars.length === 0 && (
+        <div className="text-center text-red-500 py-10">
+          No available cars found.
+        </div>
+      )}
       {cars.map((car) => (
         <AvailableCar key={car._id} car={car} />
       ))}
