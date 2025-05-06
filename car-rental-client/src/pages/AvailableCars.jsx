@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import AvailableCar from './AvailableCar';
 import LoadingSpinner from '../components/LoadingSpinner';
-import axios from 'axios';
 
 const AvailableCars = () => {
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortOption, setSortOption] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchCars = async () => {
@@ -30,12 +30,20 @@ const AvailableCars = () => {
     fetchCars();
   }, []);
 
-  const sortedCars = [...cars].sort((a, b) => {
+  // Search filtering
+  const filteredCars = cars.filter((car) =>
+    car.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (car.brand && car.brand.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    car.location.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Sorting after filtering
+  const sortedCars = [...filteredCars].sort((a, b) => {
     if (sortOption === "price-low") return a.price - b.price;
     if (sortOption === "price-high") return b.price - a.price;
     if (sortOption === "date-newest") return new Date(b.date) - new Date(a.date);
     if (sortOption === "date-oldest") return new Date(a.date) - new Date(b.date);
-    return 0; // no sorting
+    return 0;
   });
 
   if (loading) {
@@ -50,12 +58,19 @@ const AvailableCars = () => {
 
   return (
     <div className="mx-4 my-8">
-      {/* Sorting Dropdown */}
-      <div className="flex justify-end mb-4">
+      {/* Search and Sort Controls */}
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+        <input
+          type="text"
+          placeholder="Search by model, brand, or location"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="input input-bordered w-full md:max-w-md"
+        />
         <select
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value)}
-          className="select select-bordered w-full max-w-xs"
+          className="select select-bordered w-full md:max-w-xs"
         >
           <option value="">Sort By</option>
           <option value="date-newest">Date Added (Newest)</option>
@@ -68,7 +83,7 @@ const AvailableCars = () => {
       {/* Car Grid */}
       {sortedCars.length === 0 ? (
         <div className="text-center text-red-500 py-10">
-          No available cars found.
+          No cars match your search.
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -82,4 +97,5 @@ const AvailableCars = () => {
 };
 
 export default AvailableCars;
+
 
