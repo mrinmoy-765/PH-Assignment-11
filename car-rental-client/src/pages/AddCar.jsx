@@ -11,7 +11,18 @@ const AddCar = () => {
   const { mongoUser } = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
+    brand: "",
     model: "",
+    year: "",
+    vehicleType: "",
+    color: "",
+    mileage: "",
+    engine: "",
+    transmission: "",
+    fuelType: "",
+    seats: "",
+    doors: "",
+    luggageCapacity: "",
     price: "",
     availability: "Available",
     registration: "",
@@ -68,16 +79,105 @@ const AddCar = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow mt-10">
+    <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow mt-10">
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
         Add a Car
       </h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+        <input
+          name="brand"
+          type="text"
+          placeholder="Brand"
+          value={formData.brand}
+          onChange={handleChange}
+          className="w-full input input-bordered"
+        />
         <input
           name="model"
           type="text"
           placeholder="Car Model"
+          value={formData.model}
+          onChange={handleChange}
+          className="w-full input input-bordered"
           required
+        />
+        <input
+          name="year"
+          type="number"
+          placeholder="Year"
+          value={formData.year}
+          onChange={handleChange}
+          className="w-full input input-bordered"
+        />
+        <input
+          name="vehicleType"
+          type="text"
+          placeholder="Sedan/SUV/Jeep/Microbus/pickup"
+          value={formData.vehicleType}
+          onChange={handleChange}
+          className="w-full input input-bordered"
+        />
+        <input
+          name="color"
+          type="text"
+          placeholder="Color"
+          value={formData.color}
+          onChange={handleChange}
+          className="w-full input input-bordered"
+        />
+        <input
+          name="mileage"
+          type="text"
+          placeholder="Mileage"
+          value={formData.mileage}
+          onChange={handleChange}
+          className="w-full input input-bordered"
+        />
+        <input
+          name="engine"
+          type="text"
+          placeholder="Engine"
+          value={formData.engine}
+          onChange={handleChange}
+          className="w-full input input-bordered"
+        />
+        <input
+          name="transmission"
+          type="text"
+          placeholder="Transmission"
+          value={formData.transmission}
+          onChange={handleChange}
+          className="w-full input input-bordered"
+        />
+        <input
+          name="fuelType"
+          type="text"
+          placeholder="Fuel Type"
+          value={formData.fuelType}
+          onChange={handleChange}
+          className="w-full input input-bordered"
+        />
+        <input
+          name="seats"
+          type="number"
+          placeholder="Seats"
+          value={formData.seats}
+          onChange={handleChange}
+          className="w-full input input-bordered"
+        />
+        <input
+          name="doors"
+          type="number"
+          placeholder="Doors"
+          value={formData.doors}
+          onChange={handleChange}
+          className="w-full input input-bordered"
+        />
+        <input
+          name="luggageCapacity"
+          type="text"
+          placeholder="Luggage Capacity"
+          value={formData.luggageCapacity}
           onChange={handleChange}
           className="w-full input input-bordered"
         />
@@ -85,12 +185,14 @@ const AddCar = () => {
           name="price"
           type="number"
           placeholder="Daily Rental Price"
-          required
+          value={formData.price}
           onChange={handleChange}
           className="w-full input input-bordered"
+          required
         />
         <select
           name="availability"
+          value={formData.availability}
           onChange={handleChange}
           className="w-full input input-bordered"
         >
@@ -101,14 +203,16 @@ const AddCar = () => {
           name="registration"
           type="text"
           placeholder="Vehicle Registration Number"
-          required
+          value={formData.registration}
           onChange={handleChange}
           className="w-full input input-bordered"
+          required
         />
         <input
           name="features"
           type="text"
           placeholder="Features (comma separated)"
+          value={formData.features}
           onChange={handleChange}
           className="w-full input input-bordered"
         />
@@ -116,28 +220,31 @@ const AddCar = () => {
           name="imageUrl"
           type="text"
           placeholder="Image URL"
-          required
+          value={formData.imageUrl}
           onChange={handleChange}
           className="w-full input input-bordered"
+          required
         />
         <input
           name="location"
           type="text"
           placeholder="Location"
-          required
+          value={formData.location}
           onChange={handleChange}
           className="w-full input input-bordered"
+          required
         />
         <textarea
           name="description"
           placeholder="Description"
-          required
+          value={formData.description}
           onChange={handleChange}
-          className="w-full textarea textarea-bordered"
+          className="w-full textarea textarea-bordered grid col-span-2"
+          required
         />
         <button
           type="submit"
-          className="btn bg-red-600 hover:bg-red-700 text-white w-full"
+          className="btn bg-blue-500 hover:bg-blue-700 text-white w-full grid col-span-2"
         >
           Add Car
         </button>

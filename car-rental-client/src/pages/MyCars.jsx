@@ -223,8 +223,21 @@ const MyCars = () => {
             <>
               <form
                 onSubmit={handleUpdateCar}
-                className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                className="grid grid-cols-1 md:grid-cols-3 gap-4"
               >
+                {/* Brand */}
+                <div>
+                  <p className="font-semibold mb-1">Brand</p>
+                  <input
+                    type="text"
+                    name="brand"
+                    value={selectedCar.brand}
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full"
+                    placeholder="Brand"
+                  />
+                </div>
+
                 {/* Model */}
                 <div>
                   <p className="font-semibold mb-1">Model</p>
@@ -235,6 +248,114 @@ const MyCars = () => {
                     onChange={handleInputChange}
                     className="input input-bordered w-full"
                     placeholder="Model"
+                  />
+                </div>
+
+                {/* Year */}
+                <div>
+                  <p className="font-semibold mb-1">Year</p>
+                  <input
+                    type="number"
+                    name="year"
+                    value={selectedCar.year}
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+
+                {/* Color */}
+                <div>
+                  <p className="font-semibold mb-1">Color</p>
+                  <input
+                    name="color"
+                    type="text"
+                    value={selectedCar.color}
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+
+                {/* Mileage */}
+                <div>
+                  <p className="font-semibold mb-1">Mileage</p>
+                  <input
+                    name="mileage"
+                    type="text"
+                    value={selectedCar.mileage}
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+
+                {/* Engine */}
+                <div>
+                  <p className="font-semibold mb-1">Engine</p>
+                  <input
+                    name="engine"
+                    type="text"
+                    value={selectedCar.engine}
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+
+                {/* Transmission */}
+                <div>
+                  <p className="font-semibold mb-1">Transmission</p>
+                  <input
+                    name="transmission"
+                    type="text"
+                    value={selectedCar.transmission}
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+
+                {/* Fuel Type */}
+                <div>
+                  <p className="font-semibold mb-1">Fuel Type</p>
+                  <input
+                    name="fuelType"
+                    type="text"
+                    value={selectedCar.fuelType}
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+
+                {/* Seats */}
+                <div>
+                  <p className="font-semibold mb-1">Seats</p>
+                  <input
+                    name="seats"
+                    type="number"
+                    value={selectedCar.seats}
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+
+                {/* Doors */}
+                <div>
+                  <p className="font-semibold mb-1">Doors</p>
+                  <input
+                    name="doors"
+                    type="number"
+                    value={selectedCar.doors}
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+
+                {/* Luggage Capacity */}
+                <div>
+                  <p className="font-semibold mb-1">Luggage Capacity</p>
+                  <input
+                    name="luggageCapacity"
+                    type="text"
+                    value={selectedCar.luggageCapacity}
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full"
                   />
                 </div>
 
@@ -272,7 +393,6 @@ const MyCars = () => {
                     name="registration"
                     type="text"
                     value={selectedCar.registration}
-                    required
                     onChange={handleInputChange}
                     className="input input-bordered w-full"
                   />
@@ -280,11 +400,17 @@ const MyCars = () => {
 
                 {/* Features */}
                 <div>
-                  <p className="font-semibold mb-1">Features</p>
+                  <p className="font-semibold mb-1">
+                    Features (comma separated)
+                  </p>
                   <input
                     name="features"
                     type="text"
-                    value={selectedCar.features}
+                    value={
+                      Array.isArray(selectedCar.features)
+                        ? selectedCar.features.join(", ")
+                        : selectedCar.features
+                    }
                     onChange={handleInputChange}
                     className="input input-bordered w-full"
                   />
@@ -295,8 +421,8 @@ const MyCars = () => {
                   <p className="font-semibold mb-1">Location</p>
                   <input
                     name="location"
+                    type="text"
                     value={selectedCar.location}
-                    required
                     onChange={handleInputChange}
                     className="input input-bordered w-full"
                   />
@@ -307,27 +433,26 @@ const MyCars = () => {
                   <p className="font-semibold mb-1">Image URL</p>
                   <input
                     name="imageUrl"
+                    type="text"
                     value={selectedCar.imageUrl}
-                    required
                     onChange={handleInputChange}
                     className="input input-bordered w-full"
                   />
                 </div>
 
                 {/* Description */}
-                <div className="md:col-span-2">
+                <div className="md:col-span-3">
                   <p className="font-semibold mb-1">Description</p>
                   <textarea
                     name="description"
                     value={selectedCar.description}
-                    required
                     onChange={handleInputChange}
                     className="textarea textarea-bordered w-full"
                   />
                 </div>
 
                 {/* Submit Button */}
-                <div className="md:col-span-2">
+                <div className="md:col-span-3">
                   <button type="submit" className="btn btn-primary w-full">
                     Update
                   </button>
