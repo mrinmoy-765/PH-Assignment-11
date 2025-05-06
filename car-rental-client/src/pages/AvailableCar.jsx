@@ -3,7 +3,7 @@ import React from "react";
 const AvailableCar = ({car}) => {
 
         
-        const { model, price, availability, registration, features, imageUrl, location } = car;
+     const { model, price, availability, registration, features, imageUrl, location } = car;
 
   return (
     <div className="card w-96 bg-base-100 shadow-sm">
