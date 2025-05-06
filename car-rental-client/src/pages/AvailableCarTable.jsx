@@ -41,7 +41,7 @@ const AvailableCarTable = ({ cars }) => {
               <td>{car.location}</td>
               <td>
                 <span className="px-2 py-1 rounded text-xs text-white bg-blue-400 hover:bg-blue-600">
-                  <Link to="">Boook Now</Link>
+                  <Link to={`/details/${car._id}`}>Boook Now</Link>
                 </span>
               </td>
             </tr>

@@ -1,10 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
-const AvailableCar = ({car}) => {
-
-        
-     const { model, price, availability, registration, features, imageUrl, location } = car;
-
+const AvailableCar = ({ car }) => {
   return (
     <div className="card w-96 bg-base-100 shadow-sm">
       <div className="card-body">
@@ -13,7 +10,7 @@ const AvailableCar = ({car}) => {
           <h2 className="text-3xl font-bold">{car.model}</h2>
           <span className="text-lg">${car.price}/day</span>
         </div>
-        <img src={car.imageUrl} alt="" class="w-full h-52 object-contain"/>
+        <img src={car.imageUrl} alt="" class="w-full h-52 object-contain" />
         <ul className="mt-6 flex flex-col gap-2 text-xs">
           <li>
             <svg
@@ -30,7 +27,9 @@ const AvailableCar = ({car}) => {
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            <span><b>{car.registration}</b></span>
+            <span>
+              <b>{car.registration}</b>
+            </span>
           </li>
           <li>
             <svg
@@ -68,7 +67,9 @@ const AvailableCar = ({car}) => {
           </li>
         </ul>
         <div className="mt-6">
-          <button className="btn btn-primary btn-block">Book Now</button>
+          <Link to={`/details/${car._id}`}>
+            <button className="btn btn-primary btn-block">Book Now</button>
+          </Link>
         </div>
       </div>
     </div>
