@@ -28,6 +28,9 @@ async function run() {
 
     const userCollection = client.db("CarRental").collection("Users");
     const carCollection = client.db("CarRental").collection("carCollection");
+    const bookingCollection = client
+      .db("CarRental")
+      .collection("bookingCollection");
 
     //create User
     app.post("/users", async (req, res) => {
@@ -137,6 +140,14 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await carCollection.findOne(query);
+      res.send(result);
+    });
+
+    //create booking
+    app.post("/bookings", async (req, res) => {
+      const newBooking = req.body;
+      // console.log(newBooking);
+      const result = await bookingCollection.insertOne(newBooking);
       res.send(result);
     });
 

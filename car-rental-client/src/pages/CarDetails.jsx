@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useParams } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -10,11 +10,65 @@ import {
   HiOutlineMail,
   HiOutlineUser,
 } from "react-icons/hi";
+import { AuthContext } from "../providers/AuthProvider";
+import axios from "axios";
 
 const CarDetails = () => {
   const { id } = useParams();
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { mongoUser } = useContext(AuthContext);
+  const [selectedCarId, setSelectedCarId] = useState(null);
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+
+  const openModal = (carId) => {
+    setSelectedCarId(carId);
+    document.getElementById("booking_modal").showModal();
+  };
+
+  const handleConfirmBooking = async () => {
+    if (!fromDate || !toDate) {
+      alert("Please select both 'from' and 'to' dates.");
+      return;
+    }
+
+    //preparing data for booking
+    const booking = {
+      carId: selectedCarId,
+      carInfo: {
+        vehicleType: details.vehicleType,
+        engine: details.engine,
+        transmission: details.transmission,
+        fuelType: details.fuelType,
+        description: details.description,
+        image: details.image,
+        price: details.price,
+      },
+      userInfo: {
+        userId: mongoUser?._id,
+        name: mongoUser?.name,
+        email: mongoUser?.email,
+        photoUrl: mongoUser?.photoUrl,
+      },
+      fromDate,
+      toDate,
+      bookedAt: new Date(),
+    };
+
+    //create a booking
+    try {
+      const res = await axios.post("http://localhost:5000/bookings", booking);
+      if (res.data.insertedId) {
+        document.getElementById("booking_modal").close();
+        document.getElementById("success_modal").showModal();
+      }
+    } catch (err) {
+      console.error(err);
+      document.getElementById("booking_modal").close();
+      document.getElementById("error_modal").showModal();
+    }
+  };
 
   useEffect(() => {
     const getDetails = async () => {
@@ -51,7 +105,7 @@ const CarDetails = () => {
   return (
     <div className="card lg:card-side bg-base-100 shadow-sm">
       {/* image */}
-      <div className="w-1/2">
+      <div className="w-full md:w-1/2">
         <figure>
           <img
             src={details.imageUrl}
@@ -172,7 +226,15 @@ const CarDetails = () => {
 
         {/* book button */}
         <div className="card-actions justify-end">
-          <button className="btn btn-primary">Book</button>
+          {/* Book Button */}
+          <div className="card-actions justify-end">
+            <button
+              className="btn btn-primary"
+              onClick={() => openModal(details._id)}
+            >
+              Book
+            </button>
+          </div>
         </div>
       </div>
 
@@ -208,6 +270,66 @@ const CarDetails = () => {
               <button className="btn">Close</button>
             </form>
           </div>
+        </div>
+      </dialog>
+
+      {/* Booking Modal */}
+      <dialog id="booking_modal" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg mb-4">Select Booking Dates</h3>
+
+          <div className="mb-2">
+            <label className="block mb-1">From:</label>
+            <input
+              type="datetime-local"
+              className="input input-bordered w-full"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block mb-1">To:</label>
+            <input
+              type="datetime-local"
+              className="input input-bordered w-full"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+            />
+          </div>
+
+          <div className="flex justify-end gap-2">
+            <form method="dialog">
+              <button className="btn">Cancel</button>
+            </form>
+            <button className="btn btn-primary" onClick={handleConfirmBooking}>
+              Confirm Booking
+            </button>
+          </div>
+        </div>
+      </dialog>
+
+      {/* Success Modal */}
+      <dialog id="success_modal" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg text-green-600">
+            Booking Successful!
+          </h3>
+          <p className="py-2">Your booking has been confirmed.</p>
+          <form method="dialog" className="modal-backdrop">
+            <button className="btn btn-success">Close</button>
+          </form>
+        </div>
+      </dialog>
+
+      {/* Error Modal */}
+      <dialog id="error_modal" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg text-red-600">Booking Failed</h3>
+          <p className="py-2">Something went wrong. Please try again later.</p>
+          <form method="dialog" className="modal-backdrop">
+            <button className="btn btn-error">Close</button>
+          </form>
         </div>
       </dialog>
     </div>

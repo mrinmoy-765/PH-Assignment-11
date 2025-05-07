@@ -69,10 +69,10 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setFirebaseUser(currentUser);
-      console.log("Auth state changed, user:", currentUser?.email); // Debug log
+      // console.log("Auth state changed, user:", currentUser?.email);
 
       if (currentUser?.email) {
-        // ✅ STEP 2: Set loading true when starting data fetch for a logged-in user
+        // STEP 2: Set loading true when starting data fetch for a logged-in user
         setLoading(true);
         fetch(`http://localhost:5000/users?email=${currentUser.email}`)
           .then((res) => {
@@ -81,7 +81,6 @@ const AuthProvider = ({ children }) => {
           })
           .then((userData) => {
             setMongoUser(userData);
-            // Chain the next fetch
             return fetch(
               `http://localhost:5000/carsByEmail?email=${currentUser.email}`
             );
@@ -91,16 +90,16 @@ const AuthProvider = ({ children }) => {
             return res.json();
           })
           .then((carData) => {
-           // console.log("Fetched car data:", carData); // Debug log
+            // console.log("Fetched car data:", carData); // Debug log
             setUserCar(carData);
-            // ✅ STEP 3: Set loading false AFTER all data is fetched successfully
+            //STEP 3: Set loading false AFTER all data is fetched successfully
             setLoading(false);
           })
           .catch((err) => {
             console.error("Data fetch error:", err);
             setMongoUser(null); // Reset data on error
             setUserCar(null);
-            // ✅ STEP 4: Set loading false even if there's an error
+            // STEP 4: Set loading false even if there's an error
             setLoading(false);
           });
       } else {
@@ -108,7 +107,7 @@ const AuthProvider = ({ children }) => {
         console.log("No user logged in or logged out."); // Debug log
         setMongoUser(null);
         setUserCar(null);
-        // ✅ STEP 5: Set loading false because the auth check is complete (no user)
+        //  STEP 5: Set loading false because the auth check is complete (no user)
         setLoading(false);
       }
     });
