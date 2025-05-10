@@ -151,6 +151,46 @@ async function run() {
       res.send(result);
     });
 
+    // Get bookings by user email
+    app.get("/bookingByEmail", async (req, res) => {
+      const email = req.query.email;
+      if (!email) {
+        return res.status(400).send({ error: "Email is required" });
+      }
+
+      const query = { "userInfo.email": email };
+      const result = await bookingCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // Update booking
+    app.put("/bookings/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedBooking = req.body;
+
+      // console.log("Updating Booking with filter:", filter);
+      // console.log("New data:", updatedBooking);
+
+      const updateDoc = {
+        $set: {
+          fromDate: updatedBooking.fromDate,
+          toDate: updatedBooking.toDate,
+        },
+      };
+
+      const result = await bookingCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    //delete booking
+    app.delete("/booking/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await bookingCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(

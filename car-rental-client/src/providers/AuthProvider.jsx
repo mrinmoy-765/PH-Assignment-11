@@ -117,8 +117,7 @@ const AuthProvider = ({ children }) => {
       console.log("Unsubscribing from auth state changes."); // Debug log
       unsubscribe();
     };
-  }, []); // Empty dependency array is correct here
-
+  }, []);
   const authValue = {
     firebaseUser,
     setFirebaseUser,

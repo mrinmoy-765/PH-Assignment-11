@@ -8,6 +8,7 @@ import AddCar from "../pages/AddCar";
 import MyCars from "../pages/MyCars";
 import AvailableCars from "../pages/AvailableCars";
 import CarDetails from "../pages/CarDetails";
+import MyBookings from "../pages/MyBookings";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
         element: <CarDetails></CarDetails>,
         loader: ({ params }) =>
           fetch(`http://localhost:5000/details/${params.id}`),
+      },
+      {
+        path: "/bookings",
+        element: <MyBookings></MyBookings>,
       },
     ],
   },

@@ -37,12 +37,13 @@ const CarDetails = () => {
     const booking = {
       carId: selectedCarId,
       carInfo: {
+        model: details.model,
         vehicleType: details.vehicleType,
         engine: details.engine,
         transmission: details.transmission,
         fuelType: details.fuelType,
         description: details.description,
-        image: details.image,
+        image: details.imageUrl,
         price: details.price,
       },
       userInfo: {
