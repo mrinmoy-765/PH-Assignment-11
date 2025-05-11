@@ -123,10 +123,10 @@ const MyCars = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
+      <h2 className="text-3xl font-bold mb-3 text-center text-gray-800">
         My Cars
       </h2>
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end mb-0">
         <select
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value)}
@@ -138,6 +138,13 @@ const MyCars = () => {
           <option value="price-low">Price (Lowest)</option>
           <option value="price-high">Price (Highest)</option>
         </select>
+      </div>
+      <div className="flex justify-end mt-0">
+        <Link to="/requests">
+          <span className="text-sm text-right text-blue-500 underline italic">
+            view booking requests
+          </span>
+        </Link>
       </div>
       <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
         <table className="table">

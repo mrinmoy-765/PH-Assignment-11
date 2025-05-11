@@ -54,6 +54,7 @@ const CarDetails = () => {
       },
       fromDate,
       toDate,
+      bookingStatus: "pending",
       bookedAt: new Date(),
     };
 

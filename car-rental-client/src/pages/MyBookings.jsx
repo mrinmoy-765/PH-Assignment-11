@@ -6,7 +6,7 @@ import { MdDelete } from "react-icons/md";
 import Swal from "sweetalert2";
 
 const MyBookings = () => {
-  const { mongoUser, loading } = useContext(AuthContext);
+  const { mongoUser } = useContext(AuthContext);
   const [bookings, setBookings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedBookingId, setSelectedBookingId] = useState(null);
@@ -111,7 +111,7 @@ const MyBookings = () => {
     });
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#2A2438]">
         <LoadingSpinner />

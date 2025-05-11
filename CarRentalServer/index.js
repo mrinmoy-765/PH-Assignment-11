@@ -191,6 +191,35 @@ async function run() {
       res.send(result);
     });
 
+    // Get Car IDs by Owner Email
+    app.get("/owner-cars/:email", async (req, res) => {
+      const email = req.params.email;
+
+      try {
+        const cars = await carCollection.find({ email: email }).toArray();
+        const carIds = cars.map((car) => car._id.toString());
+        res.send(carIds);
+      } catch (error) {
+        res.status(500).send({ error: "Failed to fetch owner's car IDs" });
+      }
+    });
+
+    // Get Bookings with Pending Status for Car IDs
+    app.post("/bookings/pending", async (req, res) => {
+      const { carIds } = req.body;
+
+      try {
+        const bookings = await bookingCollection
+          .find({ carId: { $in: carIds }, bookingStatus: "pending" })
+          .toArray();
+
+        res.send(bookings);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: "Failed to fetch pending bookings" });
+      }
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
