@@ -5,6 +5,7 @@ import { GiConfirmed } from "react-icons/gi";
 import { MdOutlineCancel } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
+import Swal from "sweetalert2";
 
 const BookingRequests = () => {
   const { mongoUser, loading } = useContext(AuthContext);
@@ -47,6 +48,47 @@ const BookingRequests = () => {
     }
   }, [mongoUser?.email]);
 
+  //update booking status
+  const handleStatusUpdate = async (bookingId, status) => {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/bookings/${bookingId}/status`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status }),
+        }
+      );
+
+      if (res.ok) {
+        setPendingBookings((prev) =>
+          prev.map((booking) =>
+            booking._id === bookingId
+              ? { ...booking, bookingStatus: status }
+              : booking
+          )
+        );
+
+        Swal.fire({
+          icon: "success",
+          title: `Booking ${status}`,
+          text: `The booking has been successfully ${status}.`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      } else {
+        throw new Error("Failed to update booking");
+      }
+    } catch (err) {
+      console.error("Error updating booking status:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to update the booking status. Please try again later.",
+      });
+    }
+  };
+
   if (loading || isloading) return <LoadingSpinner />;
 
   return (
@@ -85,7 +127,15 @@ const BookingRequests = () => {
                     </strong>
                     <br />
                     Status:{" "}
-                    <span className="text-orange-400 font-extrabold">
+                    <span
+                      className={`font-extrabold ${
+                        booking.bookingStatus === "pending"
+                          ? "text-orange-400"
+                          : booking.bookingStatus === "confirmed"
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }`}
+                    >
                       {booking.bookingStatus}
                     </span>
                   </p>
@@ -95,10 +145,36 @@ const BookingRequests = () => {
                 <div className="flex flex-col md:items-end justify-between gap-4">
                   {/* Mobile buttons */}
                   <div className="flex items-center justify-between gap-2 md:hidden">
-                    <button className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-1 rounded">
+                    <button
+                      disabled={["confirmed", "cancelled"].includes(
+                        booking.bookingStatus
+                      )}
+                      onClick={() =>
+                        handleStatusUpdate(booking._id, "confirmed")
+                      }
+                      className={`flex-1 font-semibold py-1 rounded text-white ${
+                        booking.bookingStatus === "confirmed" ||
+                        booking.bookingStatus === "cancelled"
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-green-500 hover:bg-green-600"
+                      }`}
+                    >
                       Confirm
                     </button>
-                    <button className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-1 rounded">
+                    <button
+                      disabled={["confirmed", "cancelled"].includes(
+                        booking.bookingStatus
+                      )}
+                      onClick={() =>
+                        handleStatusUpdate(booking._id, "cancelled")
+                      }
+                      className={`flex-1 font-semibold py-1 rounded text-white ${
+                        booking.bookingStatus === "confirmed" ||
+                        booking.bookingStatus === "cancelled"
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-red-500 hover:bg-red-600"
+                      }`}
+                    >
                       Cancel
                     </button>
                   </div>
@@ -107,13 +183,35 @@ const BookingRequests = () => {
                   <div className="hidden md:flex items-center justify-end gap-2">
                     <button
                       title="Confirm"
-                      className="text-xl text-green-500 hover:text-green-700"
+                      disabled={["confirmed", "cancelled"].includes(
+                        booking.bookingStatus
+                      )}
+                      onClick={() =>
+                        handleStatusUpdate(booking._id, "confirmed")
+                      }
+                      className={`text-xl ${
+                        booking.bookingStatus === "confirmed" ||
+                        booking.bookingStatus === "cancelled"
+                          ? "text-gray-400 cursor-not-allowed"
+                          : "text-green-500 hover:text-green-700"
+                      }`}
                     >
                       <GiConfirmed />
                     </button>
                     <button
                       title="Cancel"
-                      className="text-xl text-red-500 hover:text-red-700"
+                      disabled={["confirmed", "cancelled"].includes(
+                        booking.bookingStatus
+                      )}
+                      onClick={() =>
+                        handleStatusUpdate(booking._id, "cancelled")
+                      }
+                      className={`text-xl ${
+                        booking.bookingStatus === "confirmed" ||
+                        booking.bookingStatus === "cancelled"
+                          ? "text-gray-400 cursor-not-allowed"
+                          : "text-red-500 hover:text-red-700"
+                      }`}
                     >
                       <MdOutlineCancel />
                     </button>

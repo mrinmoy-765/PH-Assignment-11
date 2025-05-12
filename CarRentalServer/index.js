@@ -204,21 +204,47 @@ async function run() {
       }
     });
 
-    // Get Bookings with Pending Status for Car IDs
+    // Get Bookings with Pending/confirmed/cancelled Status for Car IDs
     app.post("/bookings/pending", async (req, res) => {
       const { carIds } = req.body;
 
       try {
         const bookings = await bookingCollection
-          .find({ carId: { $in: carIds }, bookingStatus: "pending" })
+          .find({ carId: { $in: carIds } })
           .toArray();
 
         res.send(bookings);
       } catch (error) {
         console.error(error);
-        res.status(500).send({ error: "Failed to fetch pending bookings" });
+        res.status(500).send({ error: "Failed to fetch  bookings" });
       }
     });
+
+
+
+   // update booking status
+app.patch("/bookings/:id/status", async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    const result = await bookingCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { bookingStatus: status } }
+    );
+
+    res.send(result);
+  } catch (err) {
+    console.error("Error updating booking status:", err);
+    res.status(500).send({ error: "Failed to update booking status" });
+  }
+});
+
+
+
+
+
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
