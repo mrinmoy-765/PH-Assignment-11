@@ -23,7 +23,7 @@ const BookingRequests = () => {
 
         console.log("car ids fetched", carIds);
 
-        // Step 2: Get all bookings with status "pending" for those car IDs
+        // Step 2: Get all bookings  for those car IDs
         const resBookings = await fetch(
           "http://localhost:5000/bookings/pending",
           {

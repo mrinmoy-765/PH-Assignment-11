@@ -196,14 +196,14 @@ const MyBookings = () => {
                   <td className="text-center">
                     <span
                       className={`badge ${
-                        booking.status === "confirmed"
+                        booking.bookingStatus === "confirmed"
                           ? "badge-success"
-                          : booking.status === "pending"
+                          : booking.bookigStatus === "pending"
                           ? "badge-warning"
                           : "badge-error"
                       }`}
                     >
-                      {booking.status || "pending"}
+                      {booking.bookingStatus}
                     </span>
                   </td>
                   <td className="text-center">
