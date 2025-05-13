@@ -171,7 +171,7 @@ const MyCars = () => {
                 </td>
                 <td className="p-2 font-medium">{car.model}</td>
                 <td className="p-2">${car.price}</td>
-                <td className="p-2">{car.bookingCount || 0}</td>
+                <td className="p-2">{car.bookingCount || "N/A"}</td>
                 <td className="p-2">
                   <span
                     className={`px-2 py-1 rounded text-xs ${

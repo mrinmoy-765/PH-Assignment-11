@@ -144,12 +144,42 @@ async function run() {
     });
 
     //create booking
+    // app.post("/bookings", async (req, res) => {
+    //   const newBooking = req.body;
+    //   // console.log(newBooking);
+    //   const result = await bookingCollection.insertOne(newBooking);
+    //   res.send(result);
+    // });
+
+
+    // Create a booking and increment bookingCount in carCollection
     app.post("/bookings", async (req, res) => {
-      const newBooking = req.body;
-      // console.log(newBooking);
-      const result = await bookingCollection.insertOne(newBooking);
-      res.send(result);
+  const newBooking = req.body;
+
+  try {
+    // Insert new booking
+    const bookingResult = await bookingCollection.insertOne(newBooking);
+
+    // Extract carId from the new booking
+    const carId = newBooking.carId;
+
+    // Increment bookingCount in carCollection
+    const updateResult = await carCollection.updateOne(
+      { _id: new ObjectId(carId) },
+      { $inc: { bookingCount: 1 } }
+    );
+
+    res.send({
+      bookingResult,
+      bookingCountUpdate: updateResult
     });
+  } catch (error) {
+    console.error("Error during booking:", error);
+    res.status(500).send({ error: "Booking failed" });
+  }
+});
+
+
 
     // Get bookings by user email
     app.get("/bookingByEmail", async (req, res) => {

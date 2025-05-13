@@ -60,16 +60,28 @@ const CarDetails = () => {
 
     //create a booking
     try {
-      const res = await axios.post("http://localhost:5000/bookings", booking);
-      if (res.data.insertedId) {
-        document.getElementById("booking_modal").close();
-        document.getElementById("success_modal").showModal();
-      }
-    } catch (err) {
-      console.error(err);
-      document.getElementById("booking_modal").close();
-      document.getElementById("error_modal").showModal();
-    }
+  const res = await axios.post("http://localhost:5000/bookings", booking);
+  if (res.data.bookingResult && res.data.bookingResult.insertedId) {
+    document.getElementById("booking_modal").close();
+    document.getElementById("success_modal").showModal();
+  }
+} catch (err) {
+  console.error(err);
+  document.getElementById("booking_modal").close();
+  document.getElementById("error_modal").showModal();
+}
+
+    // try {
+    //   const res = await axios.post("http://localhost:5000/bookings", booking);
+    //   if (res.data.insertedId) {
+    //     document.getElementById("booking_modal").close();
+    //     document.getElementById("success_modal").showModal();
+    //   }
+    // } catch (err) {
+    //   console.error(err);
+    //   document.getElementById("booking_modal").close();
+    //   document.getElementById("error_modal").showModal();
+    // }
   };
 
   useEffect(() => {
