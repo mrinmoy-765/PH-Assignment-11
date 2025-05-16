@@ -4,6 +4,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import { CiEdit } from "react-icons/ci";
 import { MdDelete } from "react-icons/md";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const MyBookings = () => {
   const { mongoUser } = useContext(AuthContext);
@@ -18,10 +19,22 @@ const MyBookings = () => {
 
     const fetchBookings = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:5000/bookingByEmail?email=${mongoUser.email}`
+        const token = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("accessToken="))
+          ?.split("=")[1];
+
+        const res = await axios.get(
+          `http://localhost:5000/bookingByEmail?email=${mongoUser.email}`,
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
-        const data = await res.json();
+
+        const data = res.data;
         setBookings(data);
       } catch (error) {
         console.error("Error fetching bookings:", error);

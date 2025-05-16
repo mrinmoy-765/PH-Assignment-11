@@ -59,13 +59,18 @@ const AddCar = () => {
     };
 
     try {
-      const response = await axios.post("http://localhost:5000/addCar", newCar);
+      const response = await axios.post(
+        "http://localhost:5000/addCar",
+        newCar,
+        {
+          withCredentials: true,
+        }
+      );
+
       if (response.data.insertedId) {
-        //alert("Car added successfully!");
-        // navigate("/");
         Swal.fire({
           title: "Success!",
-          text: "Car Registgtered Successfully",
+          text: "Car Registered Successfully",
           icon: "success",
           confirmButtonText: "OK",
         }).then(() => {
@@ -83,7 +88,10 @@ const AddCar = () => {
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
         Add a Car
       </h2>
-      <form onSubmit={handleSubmit} className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
+      <form
+        onSubmit={handleSubmit}
+        className="grid sm:grid-cols-1 md:grid-cols-2 gap-4"
+      >
         <input
           name="brand"
           type="text"

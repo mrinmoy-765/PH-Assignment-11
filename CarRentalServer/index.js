@@ -1,4 +1,6 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 5000;
@@ -6,7 +8,14 @@ require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 //middleware
-app.use(cors());
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ncoxxcy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -32,6 +41,36 @@ async function run() {
       .db("CarRental")
       .collection("bookingCollection");
 
+    const verifyToken = (req, res, next) => {
+      const token = req.cookies.accessToken;
+      console.log("indise verify token", token);
+
+      if (!token) return res.status(401).send("Unauthorized");
+
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) return res.status(403).send("Forbidden");
+        req.user = decoded;
+        next();
+      });
+    };
+
+    //Auth related APIs
+    app.post("/jwt", async (req, res) => {
+      const user = req.body;
+      // Create JWT token
+      const accessToken = jwt.sign(user, process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
+      // Set cookies
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: false, // Use secure in production
+        sameSite: "strict",
+        //   maxAge: 15 * 60 * 1000, // 15 minutes
+      });
+      res.send({ sucess: true });
+    });
+
     //create User
     app.post("/users", async (req, res) => {
       const newUser = req.body;
@@ -41,7 +80,7 @@ async function run() {
     });
 
     //get user by email retrived from firebase
-    app.get("/users", async (req, res) => {
+    app.get("/users", verifyToken, async (req, res) => {
       try {
         const email = req.query.email;
         if (!email)
@@ -59,7 +98,7 @@ async function run() {
     });
 
     //add cars
-    app.post("/addCar", async (req, res) => {
+    app.post("/addCar", verifyToken, async (req, res) => {
       const newCar = req.body;
       // console.log(newCar);
       const result = await carCollection.insertOne(newCar);
@@ -67,8 +106,10 @@ async function run() {
     });
 
     //get logged in users all cars
-    app.get("/carsByEmail", async (req, res) => {
-      const email = req.query.email;
+    app.get("/carsByEmail/:email", verifyToken, async (req, res) => {
+      const email = req.params.email;
+      console.log("cookies in get car", req.cookies.accessToken);
+
       if (!email) {
         return res.status(400).send({ error: "Email is required" });
       }
@@ -143,46 +184,35 @@ async function run() {
       res.send(result);
     });
 
-    //create booking
-    // app.post("/bookings", async (req, res) => {
-    //   const newBooking = req.body;
-    //   // console.log(newBooking);
-    //   const result = await bookingCollection.insertOne(newBooking);
-    //   res.send(result);
-    // });
-
-
     // Create a booking and increment bookingCount in carCollection
     app.post("/bookings", async (req, res) => {
-  const newBooking = req.body;
+      const newBooking = req.body;
 
-  try {
-    // Insert new booking
-    const bookingResult = await bookingCollection.insertOne(newBooking);
+      try {
+        // Insert new booking
+        const bookingResult = await bookingCollection.insertOne(newBooking);
 
-    // Extract carId from the new booking
-    const carId = newBooking.carId;
+        // Extract carId from the new booking
+        const carId = newBooking.carId;
 
-    // Increment bookingCount in carCollection
-    const updateResult = await carCollection.updateOne(
-      { _id: new ObjectId(carId) },
-      { $inc: { bookingCount: 1 } }
-    );
+        // Increment bookingCount in carCollection
+        const updateResult = await carCollection.updateOne(
+          { _id: new ObjectId(carId) },
+          { $inc: { bookingCount: 1 } }
+        );
 
-    res.send({
-      bookingResult,
-      bookingCountUpdate: updateResult
+        res.send({
+          bookingResult,
+          bookingCountUpdate: updateResult,
+        });
+      } catch (error) {
+        console.error("Error during booking:", error);
+        res.status(500).send({ error: "Booking failed" });
+      }
     });
-  } catch (error) {
-    console.error("Error during booking:", error);
-    res.status(500).send({ error: "Booking failed" });
-  }
-});
-
-
 
     // Get bookings by user email
-    app.get("/bookingByEmail", async (req, res) => {
+    app.get("/bookingByEmail", verifyToken, async (req, res) => {
       const email = req.query.email;
       if (!email) {
         return res.status(400).send({ error: "Email is required" });
@@ -225,6 +255,8 @@ async function run() {
     app.get("/owner-cars/:email", async (req, res) => {
       const email = req.params.email;
 
+      //   console.log("cookies in get car", req.cookies.accessToken);
+
       try {
         const cars = await carCollection.find({ email: email }).toArray();
         const carIds = cars.map((car) => car._id.toString());
@@ -235,12 +267,14 @@ async function run() {
     });
 
     // Get Bookings with Pending/confirmed/cancelled Status for Car IDs
-    app.post("/bookings/pending", async (req, res) => {
+    app.post("/bookings/pending", verifyToken, async (req, res) => {
       const { carIds } = req.body;
 
+      console.log("cookies in booking", req.cookies.accessToken);
       try {
         const bookings = await bookingCollection
           .find({ carId: { $in: carIds } })
+          .sort({ _id: -1 }) // 🔽 descending, newest first
           .toArray();
 
         res.send(bookings);
@@ -250,31 +284,23 @@ async function run() {
       }
     });
 
+    // update booking status
+    app.patch("/bookings/:id/status", async (req, res) => {
+      const { id } = req.params;
+      const { status } = req.body;
 
+      try {
+        const result = await bookingCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { bookingStatus: status } }
+        );
 
-   // update booking status
-app.patch("/bookings/:id/status", async (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body;
-
-  try {
-    const result = await bookingCollection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { bookingStatus: status } }
-    );
-
-    res.send(result);
-  } catch (err) {
-    console.error("Error updating booking status:", err);
-    res.status(500).send({ error: "Failed to update booking status" });
-  }
-});
-
-
-
-
-
-
+        res.send(result);
+      } catch (err) {
+        console.error("Error updating booking status:", err);
+        res.status(500).send({ error: "Failed to update booking status" });
+      }
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });

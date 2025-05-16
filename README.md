@@ -25,5 +25,8 @@ npm i react-toastify
 npm init -y
 npm i express cors mongodb dotenv
 npm install -g nodemon
+npm install jsonwebtoken
+require('crypto').randomBytes(64).toString('hex')
+npm install cookie-parser
 nodemon index.js
 ```

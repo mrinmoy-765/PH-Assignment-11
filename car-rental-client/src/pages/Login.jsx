@@ -3,6 +3,7 @@ import { AuthContext } from "../providers/AuthProvider";
 import { useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
+import axios from "axios";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -32,6 +33,11 @@ export default function Login() {
     signInUser(email, password)
       .then((result) => {
         const user = result.user;
+        axios
+          .post("http://localhost:5000/jwt", user, { withCredentials: true })
+          .then((res) => {
+            console.log("jwt token", res.data);
+          });
         setFirebaseUser(user);
         navigate(location?.state ? location.state : "/");
       })

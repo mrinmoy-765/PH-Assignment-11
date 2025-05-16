@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import app from "../firebase/firebase.config";
+import axios from "axios";
 
 import {
   getAuth,
@@ -9,6 +10,7 @@ import {
   GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
+  linkWithCredential,
 } from "firebase/auth";
 
 export const AuthContext = createContext();
@@ -69,55 +71,57 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setFirebaseUser(currentUser);
-      // console.log("Auth state changed, user:", currentUser?.email);
 
       if (currentUser?.email) {
-        // STEP 2: Set loading true when starting data fetch for a logged-in user
         setLoading(true);
-        fetch(`http://localhost:5000/users?email=${currentUser.email}`)
-          .then((res) => {
-            if (!res.ok) throw new Error(`User fetch failed: ${res.status}`);
-            return res.json();
+
+        // Step 1: Set JWT cookie
+        axios
+          .post(
+            "http://localhost:5000/jwt",
+            { email: currentUser.email },
+            { withCredentials: true }
+          )
+          .then(() => {
+            // Step 2: Fetch MongoDB user
+            return axios.get("http://localhost:5000/users", {
+              params: { email: currentUser.email },
+              withCredentials: true,
+            });
           })
-          .then((userData) => {
-            setMongoUser(userData);
-            return fetch(
-              `http://localhost:5000/carsByEmail?email=${currentUser.email}`
+          .then((res) => {
+            setMongoUser(res.data);
+
+            // Step 3: Fetch user cars (protected route)
+            return axios.get(
+              `http://localhost:5000/carsByEmail/${currentUser.email}`,
+              {
+                withCredentials: true,
+              }
             );
           })
           .then((res) => {
-            if (!res.ok) throw new Error(`Car fetch failed: ${res.status}`);
-            return res.json();
-          })
-          .then((carData) => {
-            // console.log("Fetched car data:", carData); // Debug log
-            setUserCar(carData);
-            //STEP 3: Set loading false AFTER all data is fetched successfully
+            setUserCar(res.data);
             setLoading(false);
           })
           .catch((err) => {
             console.error("Data fetch error:", err);
-            setMongoUser(null); // Reset data on error
+            setMongoUser(null);
             setUserCar(null);
-            // STEP 4: Set loading false even if there's an error
             setLoading(false);
           });
       } else {
-        // No user is logged in or user logged out
-        console.log("No user logged in or logged out."); // Debug log
+        console.log("No user logged in or logged out.");
         setMongoUser(null);
         setUserCar(null);
-        //  STEP 5: Set loading false because the auth check is complete (no user)
         setLoading(false);
       }
     });
 
-    // Cleanup function
-    return () => {
-      console.log("Unsubscribing from auth state changes."); // Debug log
-      unsubscribe();
-    };
+    // Unsubscribe on cleanup
+    return () => unsubscribe();
   }, []);
+
   const authValue = {
     firebaseUser,
     setFirebaseUser,

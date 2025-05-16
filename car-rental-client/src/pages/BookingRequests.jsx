@@ -28,14 +28,17 @@ const BookingRequests = () => {
           "http://localhost:5000/bookings/pending",
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+            },
             body: JSON.stringify({ carIds }),
+            credentials: "include", // ✅ Correct way for fetch to send cookies
           }
         );
 
         const bookingsData = await resBookings.json();
         setPendingBookings(bookingsData);
-        console.log("Booking request fetched", bookingsData);
+        //  console.log("Booking request fetched", bookingsData);
       } catch (err) {
         console.error("Error fetching booking requests", err);
       } finally {
