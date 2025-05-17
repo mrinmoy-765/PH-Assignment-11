@@ -43,7 +43,7 @@ async function run() {
 
     const verifyToken = (req, res, next) => {
       const token = req.cookies.accessToken;
-      console.log("indise verify token", token);
+    //  console.log("indise verify token", token);
 
       if (!token) return res.status(401).send("Unauthorized");
 
@@ -71,6 +71,16 @@ async function run() {
       res.send({ sucess: true });
     });
 
+    //clear cookie
+app.post("/logout", (req, res) => {
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: false,     // Change to true in production with HTTPS
+    sameSite: "Lax",   // or "None" if cross-site and using HTTPS
+  });
+  return res.status(200).json({ message: "Logged out successfully" });
+});
+
     //create User
     app.post("/users", async (req, res) => {
       const newUser = req.body;
@@ -86,7 +96,7 @@ async function run() {
         if (!email)
           return res.status(400).send({ message: "Email is required" });
 
-        const user = await userCollection.findOne({ email }); // ✅ correct variable
+        const user = await userCollection.findOne({ email });
 
         if (!user) return res.status(404).send({ message: "User not found" });
 
@@ -116,7 +126,7 @@ async function run() {
     //get logged in users all cars
     app.get("/carsByEmail/:email", verifyToken, async (req, res) => {
       const email = req.params.email;
-      console.log("cookies in get car", req.cookies.accessToken);
+    //  console.log("cookies in get car", req.cookies.accessToken);
 
       if (!email) {
         return res.status(400).send({ error: "Email is required" });
@@ -305,7 +315,7 @@ async function run() {
     app.post("/bookings/pending", verifyToken, async (req, res) => {
       const { carIds } = req.body;
 
-      console.log("cookies in booking", req.cookies.accessToken);
+    //  console.log("cookies in booking", req.cookies.accessToken);
       try {
         const bookings = await bookingCollection
           .find({ carId: { $in: carIds } })

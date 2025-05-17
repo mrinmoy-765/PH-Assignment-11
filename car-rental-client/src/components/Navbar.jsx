@@ -4,20 +4,31 @@ import { AuthContext } from "../providers/AuthProvider";
 import { FaCarSide, FaBars, FaTimes } from "react-icons/fa";
 import Swal from "sweetalert2";
 import LoadingSpinner from "./LoadingSpinner";
+import axios from "axios";
 
 export default function Navbar() {
   const { firebaseUser, mongoUser, logOut, loading } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logOut()
-      .then(() => {
-        Swal.fire("Logged out!", "", "success");
-        navigate("/");
-      })
-      .catch((error) => console.error(error));
-  };
+const handleLogout = () => {
+  logOut() // Firebase signOut
+    .then(() => {
+      axios
+        .post("http://localhost:5000/logout", {}, { withCredentials: true })
+        .then(() => {
+          Swal.fire("Logged out!", "", "success");
+          navigate("/");
+        })
+        .catch((err) => {
+          console.error("Error clearing cookie:", err);
+        });
+    })
+    .catch((error) => {
+      console.error("Firebase logout error:", error);
+    });
+};
+
 
   const toggleMenu = () => setIsOpen(!isOpen);
 

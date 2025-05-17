@@ -39,7 +39,7 @@ export default function Login() {
             console.log("jwt token", res.data);
           });
         setFirebaseUser(user);
-        navigate(location?.state ? location.state : "/");
+        navigate(location.state?.from || '/');
       })
       .catch((err) => {
         setError(friendlyErrors[err.code] || "Login failed.");

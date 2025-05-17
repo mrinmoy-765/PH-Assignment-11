@@ -1,25 +1,31 @@
-import React, { use } from "react";
+import { useContext } from "react";
+import { Navigate, useLocation } from "react-router-dom";
 import { AuthContext } from "./AuthProvider";
-import { Navigate, useLocation } from "react-router";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 const PrivateRoute = ({ children }) => {
-  const {  firebaseUser, loading } = use(AuthContext);
+  const { firebaseUser, loading } = useContext(AuthContext);
   const location = useLocation();
-  console.log(location);
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <LoadingSpinner></LoadingSpinner>
+        <LoadingSpinner />
       </div>
     );
   }
 
-  if ( firebaseUser &&  firebaseUser?.email) {
+  if (firebaseUser?.email) {
     return children;
   }
-  return <Navigate state={location.pathname} to="/login"></Navigate>;
+
+  return (
+    <Navigate
+      to="/login"
+      state={{ from: location.pathname }}
+      replace
+    />
+  );
 };
 
 export default PrivateRoute;
