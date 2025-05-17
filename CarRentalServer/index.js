@@ -99,10 +99,18 @@ async function run() {
 
     //add cars
     app.post("/addCar", verifyToken, async (req, res) => {
-      const newCar = req.body;
-      // console.log(newCar);
-      const result = await carCollection.insertOne(newCar);
-      res.send(result);
+      const newCar = {
+        ...req.body,
+        createdAt: new Date(), // Add timestamp here
+      };
+
+      try {
+        const result = await carCollection.insertOne(newCar);
+        res.send(result);
+      } catch (err) {
+        console.error("Error adding car:", err);
+        res.status(500).json({ error: "Failed to add car" });
+      }
     });
 
     //get logged in users all cars
@@ -130,6 +138,17 @@ async function run() {
 
       const updateDoc = {
         $set: {
+          brand: updatedCar.brand,
+          engine: updatedCar.engine,
+          year: updatedCar.year,
+          mileage: updatedCar.mileage,
+          vehicleType: updatedCar.vehicleType,
+          color: updatedCar.color,
+          transmission: updatedCar.transmission,
+          fuelType: updatedCar.fuelType,
+          seats: updatedCar.seats,
+          doors: updatedCar.doors,
+          luggageCapacity: updatedCar.luggageCapacity,
           model: updatedCar.model,
           price: updatedCar.price,
           availability: updatedCar.availability,
@@ -182,6 +201,22 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const result = await carCollection.findOne(query);
       res.send(result);
+    });
+
+    // GET recent available cars (limit 8)
+    app.get("/cars/recent", async (req, res) => {
+      try {
+        const cars = await carCollection
+          .find({ availability: "Available" })
+          .sort({ createdAt: -1 }) // Sort by newest first
+          .limit(8)
+          .toArray();
+
+        res.json(cars);
+      } catch (err) {
+        console.error("Error fetching recent cars:", err);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
     });
 
     // Create a booking and increment bookingCount in carCollection

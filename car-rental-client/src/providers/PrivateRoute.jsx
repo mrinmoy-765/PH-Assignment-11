@@ -5,7 +5,6 @@ import LoadingSpinner from "../components/LoadingSpinner";
 
 const PrivateRoute = ({ children }) => {
   const {  firebaseUser, loading } = use(AuthContext);
-    // console.log(currentUser);
   const location = useLocation();
   console.log(location);
 
@@ -21,9 +20,6 @@ const PrivateRoute = ({ children }) => {
     return children;
   }
   return <Navigate state={location.pathname} to="/login"></Navigate>;
-
-  //if-> user thake return children
-  // navigate--> Login
 };
 
 export default PrivateRoute;
