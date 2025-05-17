@@ -264,7 +264,7 @@ app.post("/logout", (req, res) => {
       }
 
       const query = { "userInfo.email": email };
-      const result = await bookingCollection.find(query).toArray();
+      const result = await bookingCollection.find(query).sort({ _id: -1 }).toArray();
       res.send(result);
     });
 

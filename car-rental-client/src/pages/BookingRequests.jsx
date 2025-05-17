@@ -10,35 +10,38 @@ import Swal from "sweetalert2";
 const BookingRequests = () => {
   const { mongoUser, loading } = useContext(AuthContext);
   const [pendingBookings, setPendingBookings] = useState([]);
-  const [isloading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
+  const totalPages = Math.ceil(pendingBookings.length / itemsPerPage);
+
+  // Slice bookings for current page
+  const paginatedBookings = pendingBookings.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   useEffect(() => {
     const fetchBookingRequests = async () => {
       try {
-        // Step 1: Get all car IDs for this owner
         const resCarIds = await fetch(
           `http://localhost:5000/owner-cars/${mongoUser.email}`
         );
         const carIds = await resCarIds.json();
 
-        console.log("car ids fetched", carIds);
-
-        // Step 2: Get all bookings  for those car IDs
         const resBookings = await fetch(
           "http://localhost:5000/bookings/pending",
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ carIds }),
-            credentials: "include", // ✅ Correct way for fetch to send cookies
+            credentials: "include",
           }
         );
 
         const bookingsData = await resBookings.json();
         setPendingBookings(bookingsData);
-        //  console.log("Booking request fetched", bookingsData);
       } catch (err) {
         console.error("Error fetching booking requests", err);
       } finally {
@@ -51,7 +54,22 @@ const BookingRequests = () => {
     }
   }, [mongoUser?.email]);
 
-  //update booking status
+  const getPages = () => {
+    const pages = [];
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      if (currentPage <= 3) {
+        pages.push(1, 2, 3, 4, "...", totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
+      }
+    }
+    return pages;
+  };
+
   const handleStatusUpdate = async (bookingId, status) => {
     try {
       const res = await fetch(
@@ -92,22 +110,22 @@ const BookingRequests = () => {
     }
   };
 
-  if (loading || isloading) return <LoadingSpinner />;
+  if (loading || isLoading) return <LoadingSpinner />;
 
   return (
     <div className="px-4 sm:px-10 md:px-64 pt-2 pb-10">
       <h2 className="text-2xl font-semibold mb-4">Booking Requests</h2>
-      {pendingBookings.length === 0 ? (
+
+      {paginatedBookings.length === 0 ? (
         <p className="text-center text-red-600">No pending bookings.</p>
       ) : (
-        pendingBookings.map((booking) => (
+        paginatedBookings.map((booking) => (
           <div
             key={booking._id}
-            className="card w-full bg-base-100 card-md shadow-sm mb-4"
+            className="card w-full bg-base-100 shadow-sm mb-4"
           >
             <div className="card-body">
               <div className="flex flex-col md:flex-row justify-between gap-4">
-                {/* Car and date info */}
                 <div className="flex-1">
                   <h2 className="card-title">{booking.carInfo.model}</h2>
                   <p>
@@ -144,9 +162,7 @@ const BookingRequests = () => {
                   </p>
                 </div>
 
-                {/* Buttons and user info */}
                 <div className="flex flex-col md:items-end justify-between gap-4">
-                  {/* Mobile buttons */}
                   <div className="flex items-center justify-between gap-2 md:hidden">
                     <button
                       disabled={["confirmed", "cancelled"].includes(
@@ -156,8 +172,9 @@ const BookingRequests = () => {
                         handleStatusUpdate(booking._id, "confirmed")
                       }
                       className={`flex-1 font-semibold py-1 rounded text-white ${
-                        booking.bookingStatus === "confirmed" ||
-                        booking.bookingStatus === "cancelled"
+                        ["confirmed", "cancelled"].includes(
+                          booking.bookingStatus
+                        )
                           ? "bg-gray-400 cursor-not-allowed"
                           : "bg-green-500 hover:bg-green-600"
                       }`}
@@ -172,8 +189,9 @@ const BookingRequests = () => {
                         handleStatusUpdate(booking._id, "cancelled")
                       }
                       className={`flex-1 font-semibold py-1 rounded text-white ${
-                        booking.bookingStatus === "confirmed" ||
-                        booking.bookingStatus === "cancelled"
+                        ["confirmed", "cancelled"].includes(
+                          booking.bookingStatus
+                        )
                           ? "bg-gray-400 cursor-not-allowed"
                           : "bg-red-500 hover:bg-red-600"
                       }`}
@@ -182,7 +200,6 @@ const BookingRequests = () => {
                     </button>
                   </div>
 
-                  {/* Desktop icons */}
                   <div className="hidden md:flex items-center justify-end gap-2">
                     <button
                       title="Confirm"
@@ -193,8 +210,9 @@ const BookingRequests = () => {
                         handleStatusUpdate(booking._id, "confirmed")
                       }
                       className={`text-xl ${
-                        booking.bookingStatus === "confirmed" ||
-                        booking.bookingStatus === "cancelled"
+                        ["confirmed", "cancelled"].includes(
+                          booking.bookingStatus
+                        )
                           ? "text-gray-400 cursor-not-allowed"
                           : "text-green-500 hover:text-green-700"
                       }`}
@@ -210,8 +228,9 @@ const BookingRequests = () => {
                         handleStatusUpdate(booking._id, "cancelled")
                       }
                       className={`text-xl ${
-                        booking.bookingStatus === "confirmed" ||
-                        booking.bookingStatus === "cancelled"
+                        ["confirmed", "cancelled"].includes(
+                          booking.bookingStatus
+                        )
                           ? "text-gray-400 cursor-not-allowed"
                           : "text-red-500 hover:text-red-700"
                       }`}
@@ -235,6 +254,42 @@ const BookingRequests = () => {
             </div>
           </div>
         ))
+      )}
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-end mt-6">
+          <nav className="inline-flex items-center space-x-1">
+            <button
+              className="btn btn-sm btn-outline"
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Prev
+            </button>
+
+            {getPages().map((page, index) => (
+              <button
+                key={index}
+                className={`btn btn-sm ${
+                  currentPage === page ? "btn-primary" : "btn-outline"
+                } ${page === "..." ? "cursor-default" : ""}`}
+                onClick={() => typeof page === "number" && setCurrentPage(page)}
+                disabled={page === "..."}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button
+              className="btn btn-sm btn-outline"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </nav>
+        </div>
       )}
     </div>
   );
