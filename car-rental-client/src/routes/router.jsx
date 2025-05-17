@@ -10,6 +10,8 @@ import AvailableCars from "../pages/AvailableCars";
 import CarDetails from "../pages/CarDetails";
 import MyBookings from "../pages/MyBookings";
 import BookingRequests from "../pages/BookingRequests";
+import PrivateRoute from "../providers/PrivateRoute";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const router = createBrowserRouter([
   {
@@ -22,11 +24,19 @@ const router = createBrowserRouter([
       },
       {
         path: "/addCar",
-        element: <AddCar></AddCar>,
+        element: (
+          <PrivateRoute>
+            <AddCar></AddCar>
+          </PrivateRoute>
+        ),
       },
       {
         path: "/my-cars",
-        element: <MyCars></MyCars>,
+        element: (
+          <PrivateRoute>
+            <MyCars></MyCars>
+          </PrivateRoute>
+        ),
       },
       {
         path: "/available-cars",
@@ -34,17 +44,29 @@ const router = createBrowserRouter([
       },
       {
         path: "/details/:id",
-        element: <CarDetails></CarDetails>,
+        element: (
+          <PrivateRoute>
+            <CarDetails />
+          </PrivateRoute>
+        ),
         loader: ({ params }) =>
           fetch(`http://localhost:5000/details/${params.id}`),
       },
       {
         path: "/bookings",
-        element: <MyBookings></MyBookings>,
+        element: (
+          <PrivateRoute>
+            <MyBookings></MyBookings>
+          </PrivateRoute>
+        ),
       },
       {
         path: "/requests",
-        element: <BookingRequests></BookingRequests>,
+        element: (
+          <PrivateRoute>
+            <BookingRequests></BookingRequests>
+          </PrivateRoute>
+        ),
       },
     ],
   },
