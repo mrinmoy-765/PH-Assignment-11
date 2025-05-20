@@ -1,7 +1,6 @@
 import React from "react";
 import Lottie from "lottie-react";
 import vehicle from "../assets/vehicle.json";
-import "animate.css";
 
 const AnimeSection = () => {
   return (

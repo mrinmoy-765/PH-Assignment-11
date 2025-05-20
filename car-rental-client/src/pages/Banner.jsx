@@ -1,5 +1,6 @@
 import React from "react";
 import banner from "../assets/banner.png";
+import { Link } from "react-router-dom";
 
 const Banner = () => {
   return (
@@ -21,9 +22,11 @@ const Banner = () => {
         </div>
 
         {/* Button */}
-        <button className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md transition duration-300">
-          View Available Cars
-        </button>
+        <Link to="/available-cars">
+          <button className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md transition duration-300">
+            View Available Cars
+          </button>
+        </Link>
       </div>
     </div>
   );
