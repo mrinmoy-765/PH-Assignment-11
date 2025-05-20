@@ -4,6 +4,7 @@ import WhyChooseUs from "./WhyChooseUs";
 import RecentListings from "./RecentListings";
 import AnimeSection from "./AnimeSection";
 import Recharts from "./Recharts";
+import Offer from "./Offer";
 
 const Home = () => {
   return (
@@ -11,6 +12,7 @@ const Home = () => {
       <Banner></Banner>
       <RecentListings></RecentListings>
       <Recharts></Recharts>
+      <Offer></Offer>
       <AnimeSection></AnimeSection>
       <WhyChooseUs></WhyChooseUs>
     </div>
