@@ -17,6 +17,8 @@ npm install sweetalert2
 npm install axios
 npm install react-icons --save
 npm i react-toastify
+npm i lottie-react
+npm install animate.css --save
 ```
 
 ## 🚀 Backend Setup
