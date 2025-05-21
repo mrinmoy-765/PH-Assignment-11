@@ -59,7 +59,7 @@ export default function Register() {
           };
 
           axios
-            .post("https://car-rental-server-xi.vercel.app/users", newUser)
+            .post("https://car-rental-server-zeta.vercel.app/users", newUser)
             .then((response) => {
               if (response.data.insertedId) {
                 Swal.fire({

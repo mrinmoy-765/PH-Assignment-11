@@ -87,7 +87,7 @@ const MyCars = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`https://car-rental-server-xi.vercel.app/cars/${carId}`, {
+        fetch(`https://car-rental-server-zeta.vercel.app/cars/${carId}`, {
           method: "DELETE",
         })
           .then((res) => res.json())
@@ -115,7 +115,7 @@ const MyCars = () => {
     e.preventDefault();
     try {
       const res = await fetch(
-        `https://car-rental-server-xi.vercel.app/cars/${selectedCar._id}`,
+        `https://car-rental-server-zeta.vercel.app/cars/${selectedCar._id}`,
         {
           method: "PUT",
           headers: {

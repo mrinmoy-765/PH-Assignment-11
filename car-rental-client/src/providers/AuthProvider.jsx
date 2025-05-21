@@ -78,23 +78,26 @@ const AuthProvider = ({ children }) => {
         // Step 1: Set JWT cookie
         axios
           .post(
-            "https://car-rental-server-xi.vercel.app/jwt",
+            "https://car-rental-server-zeta.vercel.app/jwt",
             { email: currentUser.email },
             { withCredentials: true }
           )
           .then(() => {
             // Step 2: Fetch MongoDB user
-            return axios.get("https://car-rental-server-xi.vercel.app/users", {
-              params: { email: currentUser.email },
-              withCredentials: true,
-            });
+            return axios.get(
+              "https://car-rental-server-zeta.vercel.app/users",
+              {
+                params: { email: currentUser.email },
+                withCredentials: true,
+              }
+            );
           })
           .then((res) => {
             setMongoUser(res.data);
 
             // Step 3: Fetch user cars (protected route)
             return axios.get(
-              `https://car-rental-server-xi.vercel.app/carsByEmail/${currentUser.email}`,
+              `https://car-rental-server-zeta.vercel.app/carsByEmail/${currentUser.email}`,
               {
                 withCredentials: true,
               }

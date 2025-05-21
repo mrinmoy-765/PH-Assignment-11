@@ -35,7 +35,7 @@ const MyBookings = () => {
           ?.split("=")[1];
 
         const res = await axios.get(
-          `https://car-rental-server-xi.vercel.app/bookingByEmail?email=${mongoUser.email}`,
+          `https://car-rental-server-zeta.vercel.app/bookingByEmail?email=${mongoUser.email}`,
           {
             withCredentials: true,
             headers: {
@@ -112,7 +112,7 @@ const MyBookings = () => {
 
     try {
       const res = await fetch(
-        `https://car-rental-server-xi.vercel.app/bookings/${bookingId}`,
+        `https://car-rental-server-zeta.vercel.app/bookings/${bookingId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -149,7 +149,7 @@ const MyBookings = () => {
       confirmButtonText: "Yes, cancel it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`https://car-rental-server-xi.vercel.app/booking/${id}`, {
+        fetch(`https://car-rental-server-zeta.vercel.app/booking/${id}`, {
           method: "DELETE",
         })
           .then((res) => res.json())

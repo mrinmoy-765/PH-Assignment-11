@@ -16,7 +16,7 @@ export default function Navbar() {
       .then(() => {
         axios
           .post(
-            "https://car-rental-server-xi.vercel.app/logout",
+            "https://car-rental-server-zeta.vercel.app/logout",
             {},
             { withCredentials: true }
           )

@@ -61,7 +61,7 @@ const CarDetails = () => {
     //create a booking
     try {
       const res = await axios.post(
-        "https://car-rental-server-xi.vercel.app/bookings",
+        "https://car-rental-server-zeta.vercel.app/bookings",
         booking
       );
       if (res.data.bookingResult && res.data.bookingResult.insertedId) {
@@ -75,7 +75,7 @@ const CarDetails = () => {
     }
 
     // try {
-    //   const res = await axios.post("https://car-rental-server-xi.vercel.app/bookings", booking);
+    //   const res = await axios.post("https://car-rental-server-zeta.vercel.app/bookings", booking);
     //   if (res.data.insertedId) {
     //     document.getElementById("booking_modal").close();
     //     document.getElementById("success_modal").showModal();
@@ -91,7 +91,7 @@ const CarDetails = () => {
     const getDetails = async () => {
       try {
         const res = await fetch(
-          `https://car-rental-server-xi.vercel.app/details/${id}`
+          `https://car-rental-server-zeta.vercel.app/details/${id}`
         );
         if (!res.ok) {
           throw new Error("Failed to fetch car details");

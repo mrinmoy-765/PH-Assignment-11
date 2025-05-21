@@ -11,7 +11,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["https://flourishing-blini-40d520.netlify.app"],
+    origin: ["https://elaborate-kangaroo-16f8b1.netlify.app"],
     credentials: true,
   })
 );

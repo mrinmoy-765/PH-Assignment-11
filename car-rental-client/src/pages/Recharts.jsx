@@ -17,7 +17,7 @@ const Recharts = () => {
     const fetchCars = async () => {
       try {
         const response = await axios.get(
-          "https://car-rental-server-xi.vercel.app/cars/charts",
+          "https://car-rental-server-zeta.vercel.app/cars/charts",
           {
             withCredentials: false,
           }

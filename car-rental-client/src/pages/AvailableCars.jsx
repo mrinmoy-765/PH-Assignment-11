@@ -15,7 +15,7 @@ const AvailableCars = () => {
     const fetchCars = async () => {
       try {
         const res = await fetch(
-          "https://car-rental-server-xi.vercel.app/cars/available"
+          "https://car-rental-server-zeta.vercel.app/cars/available"
         );
         const data = await res.json();
         if (Array.isArray(data)) {

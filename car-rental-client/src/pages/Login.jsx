@@ -34,7 +34,7 @@ export default function Login() {
       .then((result) => {
         const user = result.user;
         axios
-          .post("https://car-rental-server-xi.vercel.app/jwt", user, {
+          .post("https://car-rental-server-zeta.vercel.app/jwt", user, {
             withCredentials: true,
           })
           .then((res) => {

@@ -6,7 +6,7 @@ const RecentListings = () => {
 
   useEffect(() => {
     axios
-      .get("https://car-rental-server-xi.vercel.app/cars/recent")
+      .get("https://car-rental-server-zeta.vercel.app/cars/recent")
       .then((res) => {
         setCars(res.data.slice(0, 8));
       })

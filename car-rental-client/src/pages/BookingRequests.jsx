@@ -26,12 +26,12 @@ const BookingRequests = () => {
     const fetchBookingRequests = async () => {
       try {
         const resCarIds = await fetch(
-          `https://car-rental-server-xi.vercel.app/owner-cars/${mongoUser.email}`
+          `https://car-rental-server-zeta.vercel.app/owner-cars/${mongoUser.email}`
         );
         const carIds = await resCarIds.json();
 
         const resBookings = await fetch(
-          "https://car-rental-server-xi.vercel.app/bookings/pending",
+          "https://car-rental-server-zeta.vercel.app/bookings/pending",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -88,7 +88,7 @@ const BookingRequests = () => {
   const handleStatusUpdate = async (bookingId, status) => {
     try {
       const res = await fetch(
-        `https://car-rental-server-xi.vercel.app/bookings/${bookingId}/status`,
+        `https://car-rental-server-zeta.vercel.app/bookings/${bookingId}/status`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },

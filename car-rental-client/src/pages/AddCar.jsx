@@ -60,7 +60,7 @@ const AddCar = () => {
 
     try {
       const response = await axios.post(
-        "https://car-rental-server-xi.vercel.app/addCar",
+        "https://car-rental-server-zeta.vercel.app/addCar",
         newCar,
         {
           withCredentials: true,
