@@ -11,24 +11,27 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
-const handleLogout = () => {
-  logOut() // Firebase signOut
-    .then(() => {
-      axios
-        .post("http://localhost:5000/logout", {}, { withCredentials: true })
-        .then(() => {
-          Swal.fire("Logged out!", "", "success");
-          navigate("/");
-        })
-        .catch((err) => {
-          console.error("Error clearing cookie:", err);
-        });
-    })
-    .catch((error) => {
-      console.error("Firebase logout error:", error);
-    });
-};
-
+  const handleLogout = () => {
+    logOut() // Firebase signOut
+      .then(() => {
+        axios
+          .post(
+            "https://car-rental-server-xi.vercel.app/logout",
+            {},
+            { withCredentials: true }
+          )
+          .then(() => {
+            Swal.fire("Logged out!", "", "success");
+            navigate("/");
+          })
+          .catch((err) => {
+            console.error("Error clearing cookie:", err);
+          });
+      })
+      .catch((error) => {
+        console.error("Firebase logout error:", error);
+      });
+  };
 
   const toggleMenu = () => setIsOpen(!isOpen);
 

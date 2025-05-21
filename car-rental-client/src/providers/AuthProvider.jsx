@@ -78,13 +78,13 @@ const AuthProvider = ({ children }) => {
         // Step 1: Set JWT cookie
         axios
           .post(
-            "http://localhost:5000/jwt",
+            "https://car-rental-server-xi.vercel.app/jwt",
             { email: currentUser.email },
             { withCredentials: true }
           )
           .then(() => {
             // Step 2: Fetch MongoDB user
-            return axios.get("http://localhost:5000/users", {
+            return axios.get("https://car-rental-server-xi.vercel.app/users", {
               params: { email: currentUser.email },
               withCredentials: true,
             });
@@ -94,7 +94,7 @@ const AuthProvider = ({ children }) => {
 
             // Step 3: Fetch user cars (protected route)
             return axios.get(
-              `http://localhost:5000/carsByEmail/${currentUser.email}`,
+              `https://car-rental-server-xi.vercel.app/carsByEmail/${currentUser.email}`,
               {
                 withCredentials: true,
               }

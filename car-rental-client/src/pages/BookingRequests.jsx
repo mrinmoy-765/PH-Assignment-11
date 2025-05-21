@@ -26,12 +26,12 @@ const BookingRequests = () => {
     const fetchBookingRequests = async () => {
       try {
         const resCarIds = await fetch(
-          `http://localhost:5000/owner-cars/${mongoUser.email}`
+          `https://car-rental-server-xi.vercel.app/owner-cars/${mongoUser.email}`
         );
         const carIds = await resCarIds.json();
 
         const resBookings = await fetch(
-          "http://localhost:5000/bookings/pending",
+          "https://car-rental-server-xi.vercel.app/bookings/pending",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -62,9 +62,24 @@ const BookingRequests = () => {
       if (currentPage <= 3) {
         pages.push(1, 2, 3, 4, "...", totalPages);
       } else if (currentPage >= totalPages - 2) {
-        pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+        pages.push(
+          1,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages
+        );
       } else {
-        pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
+        pages.push(
+          1,
+          "...",
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          "...",
+          totalPages
+        );
       }
     }
     return pages;
@@ -73,7 +88,7 @@ const BookingRequests = () => {
   const handleStatusUpdate = async (bookingId, status) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/bookings/${bookingId}/status`,
+        `https://car-rental-server-xi.vercel.app/bookings/${bookingId}/status`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },

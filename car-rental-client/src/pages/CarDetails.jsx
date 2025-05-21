@@ -60,19 +60,22 @@ const CarDetails = () => {
 
     //create a booking
     try {
-  const res = await axios.post("http://localhost:5000/bookings", booking);
-  if (res.data.bookingResult && res.data.bookingResult.insertedId) {
-    document.getElementById("booking_modal").close();
-    document.getElementById("success_modal").showModal();
-  }
-} catch (err) {
-  console.error(err);
-  document.getElementById("booking_modal").close();
-  document.getElementById("error_modal").showModal();
-}
+      const res = await axios.post(
+        "https://car-rental-server-xi.vercel.app/bookings",
+        booking
+      );
+      if (res.data.bookingResult && res.data.bookingResult.insertedId) {
+        document.getElementById("booking_modal").close();
+        document.getElementById("success_modal").showModal();
+      }
+    } catch (err) {
+      console.error(err);
+      document.getElementById("booking_modal").close();
+      document.getElementById("error_modal").showModal();
+    }
 
     // try {
-    //   const res = await axios.post("http://localhost:5000/bookings", booking);
+    //   const res = await axios.post("https://car-rental-server-xi.vercel.app/bookings", booking);
     //   if (res.data.insertedId) {
     //     document.getElementById("booking_modal").close();
     //     document.getElementById("success_modal").showModal();
@@ -87,7 +90,9 @@ const CarDetails = () => {
   useEffect(() => {
     const getDetails = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/details/${id}`);
+        const res = await fetch(
+          `https://car-rental-server-xi.vercel.app/details/${id}`
+        );
         if (!res.ok) {
           throw new Error("Failed to fetch car details");
         }

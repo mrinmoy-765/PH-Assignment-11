@@ -12,17 +12,15 @@ const MyCars = () => {
   const [selectedCar, setSelectedCar] = useState(null);
   const [sortOption, setSortOption] = useState("");
 
-  
-   const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
-    const totalPages = Math.ceil(userCar.length / itemsPerPage);
-  
-    // Slice bookings for current page
-    const paginatedCars = cars.slice(
-      (currentPage - 1) * itemsPerPage,
-      currentPage * itemsPerPage
-    );
-  
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(userCar.length / itemsPerPage);
+
+  // Slice bookings for current page
+  const paginatedCars = cars.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   useEffect(() => {
     if (userCar) {
@@ -47,8 +45,7 @@ const MyCars = () => {
     setCars(sortedCars);
   }, [sortOption, userCar]);
 
-
-    const getPages = () => {
+  const getPages = () => {
     const pages = [];
     if (totalPages <= 5) {
       for (let i = 1; i <= totalPages; i++) pages.push(i);
@@ -56,9 +53,24 @@ const MyCars = () => {
       if (currentPage <= 3) {
         pages.push(1, 2, 3, 4, "...", totalPages);
       } else if (currentPage >= totalPages - 2) {
-        pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+        pages.push(
+          1,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages
+        );
       } else {
-        pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
+        pages.push(
+          1,
+          "...",
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          "...",
+          totalPages
+        );
       }
     }
     return pages;
@@ -75,7 +87,7 @@ const MyCars = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:5000/cars/${carId}`, {
+        fetch(`https://car-rental-server-xi.vercel.app/cars/${carId}`, {
           method: "DELETE",
         })
           .then((res) => res.json())
@@ -102,13 +114,16 @@ const MyCars = () => {
   const handleUpdateCar = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:5000/cars/${selectedCar._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(selectedCar),
-      });
+      const res = await fetch(
+        `https://car-rental-server-xi.vercel.app/cars/${selectedCar._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(selectedCar),
+        }
+      );
 
       const data = await res.json();
 
@@ -233,41 +248,43 @@ const MyCars = () => {
             ))}
           </tbody>
         </table>
-         {/* Pagination Controls */}
-      {totalPages > 1 && (
-        <div className="flex justify-end mt-6">
-          <nav className="inline-flex items-center space-x-1">
-            <button
-              className="btn btn-sm btn-outline"
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              Prev
-            </button>
-
-            {getPages().map((page, index) => (
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex justify-end mt-6">
+            <nav className="inline-flex items-center space-x-1">
               <button
-                key={index}
-                className={`btn btn-sm ${
-                  currentPage === page ? "btn-primary" : "btn-outline"
-                } ${page === "..." ? "cursor-default" : ""}`}
-                onClick={() => typeof page === "number" && setCurrentPage(page)}
-                disabled={page === "..."}
+                className="btn btn-sm btn-outline"
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
               >
-                {page}
+                Prev
               </button>
-            ))}
 
-            <button
-              className="btn btn-sm btn-outline"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </nav>
-        </div>
-      )}
+              {getPages().map((page, index) => (
+                <button
+                  key={index}
+                  className={`btn btn-sm ${
+                    currentPage === page ? "btn-primary" : "btn-outline"
+                  } ${page === "..." ? "cursor-default" : ""}`}
+                  onClick={() =>
+                    typeof page === "number" && setCurrentPage(page)
+                  }
+                  disabled={page === "..."}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                className="btn btn-sm btn-outline"
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </nav>
+          </div>
+        )}
       </div>
 
       <dialog id="edit_modal" className="modal">

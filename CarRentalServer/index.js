@@ -11,7 +11,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: ["https://flourishing-blini-40d520.netlify.app"],
     credentials: true,
   })
 );
@@ -43,7 +43,7 @@ async function run() {
 
     const verifyToken = (req, res, next) => {
       const token = req.cookies.accessToken;
-    //  console.log("indise verify token", token);
+      //  console.log("indise verify token", token);
 
       if (!token) return res.status(401).send("Unauthorized");
 
@@ -64,22 +64,21 @@ async function run() {
       // Set cookies
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: false, // Use secure in production
-        sameSite: "strict",
-        //   maxAge: 15 * 60 * 1000, // 15 minutes
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       });
       res.send({ sucess: true });
     });
 
     //clear cookie
-app.post("/logout", (req, res) => {
-  res.clearCookie("accessToken", {
-    httpOnly: true,
-    secure: false,     // Change to true in production with HTTPS
-    sameSite: "Lax",   // or "None" if cross-site and using HTTPS
-  });
-  return res.status(200).json({ message: "Logged out successfully" });
-});
+    app.post("/logout", (req, res) => {
+      res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      });
+      return res.status(200).json({ message: "Logged out successfully" });
+    });
 
     //create User
     app.post("/users", async (req, res) => {
@@ -126,7 +125,7 @@ app.post("/logout", (req, res) => {
     //get logged in users all cars
     app.get("/carsByEmail/:email", verifyToken, async (req, res) => {
       const email = req.params.email;
-    //  console.log("cookies in get car", req.cookies.accessToken);
+      //  console.log("cookies in get car", req.cookies.accessToken);
 
       if (!email) {
         return res.status(400).send({ error: "Email is required" });
@@ -264,7 +263,10 @@ app.post("/logout", (req, res) => {
       }
 
       const query = { "userInfo.email": email };
-      const result = await bookingCollection.find(query).sort({ _id: -1 }).toArray();
+      const result = await bookingCollection
+        .find(query)
+        .sort({ _id: -1 })
+        .toArray();
       res.send(result);
     });
 
@@ -315,7 +317,7 @@ app.post("/logout", (req, res) => {
     app.post("/bookings/pending", verifyToken, async (req, res) => {
       const { carIds } = req.body;
 
-    //  console.log("cookies in booking", req.cookies.accessToken);
+      //  console.log("cookies in booking", req.cookies.accessToken);
       try {
         const bookings = await bookingCollection
           .find({ carId: { $in: carIds } })
@@ -347,8 +349,20 @@ app.post("/logout", (req, res) => {
       }
     });
 
+    // GET chart
+    app.get("/cars/charts", async (req, res) => {
+      try {
+        const cars = await carCollection
+          .find({ availability: "Available" })
+          .toArray();
+        res.json(cars);
+      } catch (err) {
+        console.error("Error fetching available cars:", err);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    //  await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );

@@ -34,12 +34,14 @@ export default function Login() {
       .then((result) => {
         const user = result.user;
         axios
-          .post("http://localhost:5000/jwt", user, { withCredentials: true })
+          .post("https://car-rental-server-xi.vercel.app/jwt", user, {
+            withCredentials: true,
+          })
           .then((res) => {
             console.log("jwt token", res.data);
           });
         setFirebaseUser(user);
-        navigate(location.state?.from || '/');
+        navigate(location.state?.from || "/");
       })
       .catch((err) => {
         setError(friendlyErrors[err.code] || "Login failed.");

@@ -14,7 +14,9 @@ const AvailableCars = () => {
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        const res = await fetch("http://localhost:5000/cars/available");
+        const res = await fetch(
+          "https://car-rental-server-xi.vercel.app/cars/available"
+        );
         const data = await res.json();
         if (Array.isArray(data)) {
           setCars(data);
@@ -101,7 +103,6 @@ const AvailableCars = () => {
         </div>
       </div>
 
-     
       {sortedCars.length === 0 ? (
         <div className="text-center text-red-500 py-10">
           No cars match your search.

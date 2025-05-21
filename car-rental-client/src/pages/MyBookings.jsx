@@ -35,7 +35,7 @@ const MyBookings = () => {
           ?.split("=")[1];
 
         const res = await axios.get(
-          `http://localhost:5000/bookingByEmail?email=${mongoUser.email}`,
+          `https://car-rental-server-xi.vercel.app/bookingByEmail?email=${mongoUser.email}`,
           {
             withCredentials: true,
             headers: {
@@ -111,11 +111,14 @@ const MyBookings = () => {
     };
 
     try {
-      const res = await fetch(`http://localhost:5000/bookings/${bookingId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedBooking),
-      });
+      const res = await fetch(
+        `https://car-rental-server-xi.vercel.app/bookings/${bookingId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedBooking),
+        }
+      );
 
       if (res.ok) {
         // alert("Booking updated!");
@@ -146,7 +149,7 @@ const MyBookings = () => {
       confirmButtonText: "Yes, cancel it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:5000/booking/${id}`, {
+        fetch(`https://car-rental-server-xi.vercel.app/booking/${id}`, {
           method: "DELETE",
         })
           .then((res) => res.json())
@@ -196,7 +199,7 @@ const MyBookings = () => {
                 </td>
               </tr>
             ) : (
-             paginatedMyBookings.map((booking) => (
+              paginatedMyBookings.map((booking) => (
                 <tr key={booking._id} className="hover">
                   <td>
                     <img

@@ -6,9 +6,9 @@ const RecentListings = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/cars/recent") 
+      .get("https://car-rental-server-xi.vercel.app/cars/recent")
       .then((res) => {
-        setCars(res.data.slice(0, 8)); 
+        setCars(res.data.slice(0, 8));
       })
       .catch((err) => console.error("Error fetching cars:", err));
   }, []);
@@ -28,9 +28,15 @@ const RecentListings = () => {
                   {car.availability}
                 </span>
               </div>
-              <img src={car.imageUrl} alt="" class="w-full h-52 object-contain" />
+              <img
+                src={car.imageUrl}
+                alt=""
+                class="w-full h-52 object-contain"
+              />
               <h2 className="text-xl font-semibold mt-4">{car.model}</h2>
-              <p className="text-lg font-medium text-blue-600">${car.price}/day</p>
+              <p className="text-lg font-medium text-blue-600">
+                ${car.price}/day
+              </p>
 
               <ul className="mt-4 text-sm space-y-1">
                 <li>
@@ -41,8 +47,8 @@ const RecentListings = () => {
                 </li>
               </ul>
               <span className="text-sm text-gray-500">
-                  Added {formatDate(car.createdAt)}
-                </span>
+                Added {formatDate(car.createdAt)}
+              </span>
             </div>
           </div>
         ))}
